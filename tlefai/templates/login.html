@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+{% block body %}
+{% if error %}
+<p class=error><strong>Error:</strong> {{ error }}{% endif %}
+    <section id="banner">
+        <h2>Login</h2>
+    </section>
+    <section id="cta">
+        <form action="{{ url_for('login') }}" method=post>
+            <div class="row uniform 50%">
+                <div class="8u 12u(mobilep)">
+                    <input type="email" name="email" id="email" placeholder="Email Address">
+                </div>
+                 <div class="8u 12u(mobilep)">
+                    <input type="password" name="password" id="password" placeholder="">
+                </div>
+                <div class="4u 12u(mobilep)">
+                    <input type="submit" value="Login" class="fit">
+                </div>
+
+            </div>
+        </form>
+    </section>
+
+    {% endblock %}
