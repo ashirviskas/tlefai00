@@ -1,9 +1,9 @@
 {% extends "layout.html" %}
 {% block body %}
 {% if error %}
-<p class=error><strong>Error:</strong> {{ error }}{% endif %}</p>
+<p class=error><strong>Error:</strong> {{ error }}{% endif %}
     <section id="banner">
-        <h2>Login</h2>
+        <h2>Sign up</h2>
     </section>
     <section id="cta">
         <form action="{{ url_for('login') }}" method=post>
@@ -15,7 +15,7 @@
                     <input type="password" name="password" id="password" placeholder="">
                 </div>
                 <div class="4u 12u(mobilep)">
-                    <input type="submit" value="Login" class="fit">
+                    <input type="submit" value="Sign up" class="fit">
                 </div>
 
             </div>

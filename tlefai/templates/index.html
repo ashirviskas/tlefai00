@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+{% block body %}
+{% if error %}
+<p class=error><strong>Error:</strong> {{ error }}{% endif %}
+
+
+    <section id="banner">
+    <h2>TLEF'ai</h2>
+    <p>We will make your servers for you.</p>
+    <ul class="actions">
+        <li><a href="#" class="button special">Sign Up</a></li>
+        <li><a href="#" class="button">Learn More</a></li>
+    </ul>
+</section>
+{% endblock %}
