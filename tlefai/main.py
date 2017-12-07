@@ -2,6 +2,7 @@
 from flask import Flask, url_for
 from flask import render_template
 from flask import request
+import MySQLdb
 
 
 from tlefai import kliento_autorizacijos_valdiklis
@@ -9,6 +10,8 @@ from tlefai import kliento_autorizacijos_valdiklis
 
 
 app = Flask(__name__)
+DBpassword_ = open("database.txt", "r").readline()
+db = MySQLdb.connect(host="159.203.142.248", user="root", passwd=DBpassword_, db="tlefdatabase")
 
 @app.route('/')
 def mains():
@@ -18,10 +21,10 @@ def mains():
 def login():
     error = None
     if request.method == 'POST':
-        if kliento_autorizacijos_valdiklis.patikrinti_duomenis(request.form['email'],
+        if kliento_autorizacijos_valdiklis.patikrinti_duomenis(db, request.form['email'],
                        request.form['password']):
             print("Logged in success")
-            return kliento_autorizacijos_valdiklis.prisijungti(request.form['email'])
+            return kliento_autorizacijos_valdiklis.prisijungti(db, request.form['email'])
         else:
             error = 'Invalid username/password'
     # the code below is executed if the request method

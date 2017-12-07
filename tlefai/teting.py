@@ -13,4 +13,4 @@ cur.execute("SELECT * FROM User")
 print("Cursor executed")
 
 for row in cur.fetchall():
-    print(row[0], " ", row[1])
+    print(row[2], " ", row[3])
