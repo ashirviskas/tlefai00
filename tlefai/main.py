@@ -6,6 +6,7 @@ import MySQLdb
 
 
 from tlefai import kliento_autorizacijos_valdiklis
+from tlefai import kliento_registracijos_valdiklis
 
 
 
@@ -31,9 +32,21 @@ def login():
     # was GET or the credentials were invalid
     return render_template('login.html', error=error)
 
-@app.route('/signup/')
+
+@app.route('/signup/', methods=['POST', 'GET'])
 def signup():
-    return render_template('signup.html')
+    error = None
+    print("Signup page loaded")
+    if request.method == 'POST':
+        if kliento_registracijos_valdiklis.uzregistruoti_vartotoja(db, request.form['username'],request.form['email'],
+                                                               request.form['password']):
+            print("Registration in success")
+            return kliento_autorizacijos_valdiklis.prisijungti(db, request.form['email'])
+        else:
+            error = 'Invalid username/password'
+    # the code below is executed if the request method
+    # was GET or the credentials were invalid
+    return render_template('signup.html', error=error)
 
 # with app.test_request_context():
 #     print (url_for(login))

@@ -6,10 +6,13 @@
         <h2>Sign up</h2>
     </section>
     <section id="cta">
-        <form action="{{ url_for('login') }}" method=post>
+        <form action="{{ url_for('signup') }}" method=post>
             <div class="row uniform 50%">
                 <div class="8u 12u(mobilep)">
                     <input type="email" name="email" id="email" placeholder="Email Address">
+                </div>
+                <div class="8u 12u(mobilep)">
+                    <input type="text" name="username" id="username" placeholder="Username">
                 </div>
                  <div class="8u 12u(mobilep)">
                     <input type="password" name="password" id="password" placeholder="">

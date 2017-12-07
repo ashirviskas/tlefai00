@@ -1,6 +1,6 @@
 import MySQLdb
-
-print("Will connect")
+from time import gmtime, strftime
+strftime("%Y-%m-%d %H:%M:%S", gmtime())
 
 password_ = open("database.txt", "r").readline()
 db = MySQLdb.connect(host="159.203.142.248", user="root", passwd=password_, db="tlefdatabase")
