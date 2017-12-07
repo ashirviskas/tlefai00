@@ -2,7 +2,7 @@
 from flask import Flask, url_for
 from flask import render_template
 from flask import request
-import importlib
+
 
 from tlefai import kliento_autorizacijos_valdiklis
 
@@ -36,6 +36,8 @@ def signup():
 #     print (url_for(login))
 #     print (url_for(mains))
 #     print (url_for(signup))
+
+
 
 
 app.run(host='0.0.0.0')
