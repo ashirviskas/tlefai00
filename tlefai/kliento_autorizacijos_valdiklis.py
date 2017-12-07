@@ -1,5 +1,3 @@
-import MySQLdb
-
 def patikrinti_duomenis(db, username, password):
     cur = db.cursor()
     cur.execute("SELECT * FROM User")
