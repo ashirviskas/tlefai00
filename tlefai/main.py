@@ -36,3 +36,6 @@ def signup():
 #     print (url_for(login))
 #     print (url_for(mains))
 #     print (url_for(signup))
+
+
+app.run(host='0.0.0.0')
