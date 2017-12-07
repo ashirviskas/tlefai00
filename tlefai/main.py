@@ -10,7 +10,7 @@ from tlefai import kliento_autorizacijos_valdiklis
 
 
 app = Flask(__name__)
-DBpassword_ = open("database.txt", "r").readline()
+DBpassword_ = open("database.txt", "r").readline()[:-1]
 db = MySQLdb.connect(host="159.203.142.248", user="root", passwd=DBpassword_, db="tlefdatabase")
 
 @app.route('/')
