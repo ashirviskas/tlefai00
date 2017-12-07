@@ -8,6 +8,3 @@ def uzregistruoti_vartotoja(db, username, email, password):
         print("Failed adding to database")
         return False
     return True
-
-def prisijungti(db, username):
-    return 'Prijungto vartotojo puslapis, vartotojas: ' + username
