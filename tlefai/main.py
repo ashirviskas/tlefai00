@@ -81,5 +81,6 @@ def confirmServerpilotAPIKeys():
             error = "Bad keys"
     return render_template("confirmServerPilotAPIKeys.html", error = error)
 
+
 app.secret_key = 'thisforloggingin'
 app.run(host='0.0.0.0')
