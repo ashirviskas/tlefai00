@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+{% block body %}
+{% if error %}
+<p class=error><strong>Error:</strong> {{ error }}</p>{% endif %}
+    <section id="banner">
+        <h2>Confirm API keys</h2>
+    </section>
+    <section id="cta">
+        <form action="{{ url_for('confirmServerpilotAPIKeys') }}" method=post>
+            <div class="row uniform 50%">
+                <div class="8u 12u(mobilep)">
+                    <input type="text" name="client_id" id="client_id" placeholder="Client ID">
+                </div>
+                 <div class="8u 12u(mobilep)">
+                    <input type="text" name="api_key" id="api_key" placeholder="API Key">
+                </div>
+                <div class="4u 12u(mobilep)">
+                    <input type="submit" value="Check API key">
+                </div>
+
+            </div>
+        </form>
+    </section>
+
+    {% endblock %}

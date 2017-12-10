@@ -8,6 +8,7 @@ import MySQLdb
 
 from tlefai import kliento_autorizacijos_valdiklis
 from tlefai import kliento_registracijos_valdiklis
+from tlefai import ServerPilot_valdiklis
 
 
 
@@ -19,6 +20,7 @@ db = MySQLdb.connect(host="159.203.142.248", user="root", passwd=DBpassword_, db
 @app.route('/')
 def mains():
     return render_template('index.html')
+
 
 
 @app.route('/logout/')
@@ -35,7 +37,7 @@ def login():
         user_id = kliento_autorizacijos_valdiklis.patikrinti_duomenis(db, request.form['email'],
                        request.form['password'])
         if user_id is not None:
-            print("Logged in success")
+            print("Login success")
 
             if kliento_autorizacijos_valdiklis.prisijungti(db, request.form['email'], session):
                 return render_template('index.html')
@@ -54,7 +56,7 @@ def signup():
         if kliento_registracijos_valdiklis.uzregistruoti_vartotoja(db, request.form['username'],request.form['email'],
                                                                request.form['password']):
             print("Registration in success")
-            return kliento_autorizacijos_valdiklis.prisijungti(db, request.form['email'])
+            return render_template('index.html', error="Registration success!")
         else:
             error = 'Invalid username/password'
     # the code below is executed if the request method
@@ -66,6 +68,18 @@ def signup():
 #     print (url_for(mains))
 #     print (url_for(signup))
 
+
+@app.route('/confirmServerpilotAPIKeys/', methods=['POST', 'GET'])
+def confirmServerpilotAPIKeys():
+    error = None
+    if request.method == 'POST':
+        api_key = request.form['api_key']
+        client_id = request.form['client_id']
+        if ServerPilot_valdiklis.patikrinti_api_key(api_key, client_id):
+            return "Keys confirmed"
+        else:
+            error = "Bad keys"
+    return render_template("confirmServerPilotAPIKeys.html", error = error)
 
 app.secret_key = 'thisforloggingin'
 app.run(host='0.0.0.0')
