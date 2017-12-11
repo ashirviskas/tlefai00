@@ -6,17 +6,34 @@
 
     <section id="banner">
     <h2>Select Preset</h2>
-
+    <div style="width:800px; margin:50px; auto;">
+             <input type="checkbox" name="vehicle" value="Bike"> I have a bike<br>
+    </div>
 
     </section>
+    <section id="main" class="container">
+        <div class="row">
+            <div class="12u">
+                <section class="box">
     <form action="{{ url_for('preset_selection') }}" method=post>
         <div class="row uniform 50%">
+
         <select>
             {% for key, value in presets.items() %}
             <option value="{{key}}">{{value}}</option>
             {% endfor %}
+
             <li><a href="/" class="button">Learn More</a></li>
         </select>
+            <div class="6u 12u(narrower)">
+                <input type="checkbox" id="copy" name="copy">
+                <label for="copy">Pažymėk mane</label>
+            </div>
         </div>
         </form>
+                    </section>
+            </div>
+
+        </div>
+    </section>
 {% endblock %}
