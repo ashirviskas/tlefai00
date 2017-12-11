@@ -7,7 +7,13 @@ def patikrinti_duomenis(db, username, password):
     return None
 
 def prisijungti(db, username, session):
-    session['user_id'] = str(id)
+    cur = db.cursor()
+    user_id = 0
+    cur.execute("SELECT * FROM User")
+    for row in cur.fetchall():
+        if (row[2] == username):
+            user_id = row[0]
+    session['user_id'] = user_id
     session['logged_in'] = True
     return True
 
