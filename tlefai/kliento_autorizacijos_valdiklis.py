@@ -8,12 +8,12 @@ def patikrinti_duomenis(db, username, password):
 
 def prisijungti(db, username, session):
     cur = db.cursor()
-    id = 0
+    user_id = 0
     cur.execute("SELECT * FROM User")
     for row in cur.fetchall():
         if (row[2] == username):
-            id = row[0]
-    session['user_id'] = str(id)
+            user_id = row[0]
+    session['user_id'] = user_id
     session['logged_in'] = True
     return True
 

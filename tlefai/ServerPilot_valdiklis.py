@@ -17,12 +17,14 @@ def patikrinti_api_key(session, db, api_key, client_id):
 
 def sudeti_raktus_i_lentele(session, db, api_key, client_id):
     cur = db.cursor()
-    cur.execute("""INSERT INTO ServerPilot_user (api_key, user_id, client_id) VALUES (%s,%s,%s)""",(api_key, session['user_id'], client_id))
-    db.commit()
-    print("Added key to db successfully")
-    # except:
-    #     print("Failed adding to database")
-    #     return False
+    print(session['user_id'])
+    try:
+        cur.execute("""INSERT INTO ServerPilot_user (api_key, user_id, client_id) VALUES (%s,%s,%s)""",(api_key, int(session['user_id']), client_id))
+        db.commit()
+        print("Added key to db successfully")
+    except:
+        print("Failed adding to database")
+        return False
     return
 
 def pasirinkti_preset():
