@@ -1,13 +1,38 @@
-def patikrinti_api_key():
-    return True
+import requests, json
 
-def ideti_API_rakta():
+
+def patikrinti_api_key(session, db, api_key):
+    api_link = 'https://api.digitalocean.com/v2/account'
+    headers= {"Authorization":"Bearer "+api_key}
+    #d9e301fd1e039bbe4913f1a4ce478dfb4a58e007ca56d1755096cb656c68ffc7
+    response = requests.get(api_link, headers=headers)
+    print(response)
+    if response.status_code == 200:
+        print("Authorization successful")
+        if ideti_API_rakta(session, db, api_key):
+            print("Keys saved to database")
+            return True
+        else:
+            print("Failed to save keys to database. Please try again")
+            return False
+    else:
+        print("Authorization error")
+        return False
+
+def ideti_API_rakta(session, db, api_key):
+    cur = db.cursor()
+    try:
+        cur.execute("""INSERT INTO DigitalOcean_user (api_key, user_id) VALUES (%s,%s)""",(session.userid, api_key))
+        db.commit()
+    except:
+        print("Failed adding to database")
+        return False
     return True
 
 def generuoti_ssh_raktus():
     return True
 
-def ideti_SSH_raktus():
+def ideti_SSH_raktus(publickey, privatekey):
     return True
 
 def patvirtinti():
