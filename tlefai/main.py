@@ -10,6 +10,7 @@ from tlefai import kliento_autorizacijos_valdiklis
 from tlefai import kliento_registracijos_valdiklis
 from tlefai import ServerPilot_valdiklis
 from tlefai import DigitalOcean_valdiklis
+from tlefai import CloudFlare_Valdiklis
 
 
 
@@ -21,7 +22,6 @@ db = MySQLdb.connect(host="159.203.142.248", user="root", passwd=DBpassword_, db
 @app.route('/')
 def mains():
     return render_template('index.html')
-
 
 
 @app.route('/logout/')
@@ -82,6 +82,7 @@ def confirmServerpilotAPIKeys():
             error = "Bad keys"
     return render_template("confirmServerPilotAPIKeys.html", error = error)
 
+
 @app.route('/confirmDigitalOceanAPIKeys/', methods=['POST', 'GET'])
 def confirmDigitalOceanAPIKeys():
     error = None
@@ -95,5 +96,34 @@ def confirmDigitalOceanAPIKeys():
     return render_template("confirmDigitalOceanAPIKeys.html", error = error)
 
 
-app.secret_key = 'thisforloggingin'
+@app.route('/confirmCloudFlareAPIKeys/', methods=['POST', 'GET'])
+def confirmCloudFlareAPIKeys():
+    error = None
+    if request.method == 'POST':
+        api_key = request.form['api_key']
+        email = request.form['email']
+        if CloudFlare_Valdiklis.patikrinti_api_key(session, db, email, api_key ):
+            return "Keys confirmed"
+        else:
+            error = "Bad keys"
+    return render_template("confirmCloudFlareAPIKeys.html", error = error)
+
+
+@app.route('/preset_selection/', methods=['POST', 'GET'])
+def preset_selection():
+    error = None
+    presets = {}
+    presets["1"] = "Presetas 1"
+    presets["2"] = "Presetas 2"
+    if request.method == 'POST':
+        api_key = request.form['api_key']
+        email = request.form['email']
+        if CloudFlare_Valdiklis.patikrinti_api_key(session, db, email, api_key):
+            return "Keys confirmed"
+        else:
+            error = "Bad keys"
+    return render_template("preset_selection.html", presets=presets)
+
+
+app.secret_key = 'thisforloggingin' #secret phrase for session
 app.run(host='0.0.0.0')
