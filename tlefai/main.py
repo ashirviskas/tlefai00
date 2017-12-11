@@ -75,7 +75,7 @@ def confirmServerpilotAPIKeys():
     if request.method == 'POST':
         api_key = request.form['api_key']
         client_id = request.form['client_id']
-        if ServerPilot_valdiklis.patikrinti_api_key(api_key, client_id):
+        if ServerPilot_valdiklis.patikrinti_api_key(session, db, api_key, client_id):
             return "Keys confirmed"
         else:
             error = "Bad keys"
