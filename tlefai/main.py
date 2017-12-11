@@ -9,6 +9,7 @@ import MySQLdb
 from tlefai import kliento_autorizacijos_valdiklis
 from tlefai import kliento_registracijos_valdiklis
 from tlefai import ServerPilot_valdiklis
+from tlefai import DigitalOcean_valdiklis
 
 
 
@@ -80,6 +81,17 @@ def confirmServerpilotAPIKeys():
         else:
             error = "Bad keys"
     return render_template("confirmServerPilotAPIKeys.html", error = error)
+
+@app.route('/confirmDigitalOceanAPIKeys/', methods=['POST', 'GET'])
+def confirmDigitalOceanAPIKeys():
+    error = None
+    if request.method == 'POST':
+        api_key = request.form['api_key']
+        if DigitalOcean_valdiklis.patikrinti_api_key(session, db, api_key):
+            return "Keys confirmed"
+        else:
+            error = "Bad keys"
+    return render_template("confirmDigitalOceanAPIKeys.html", error = error)
 
 
 app.secret_key = 'thisforloggingin'
