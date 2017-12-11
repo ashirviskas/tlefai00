@@ -21,7 +21,7 @@ def patikrinti_api_key(session, db, api_key):
 def ideti_API_rakta(session, db, api_key):
     cur = db.cursor()
     try:
-        cur.execute("""INSERT INTO DigitalOcean_user (api_key, user_id) VALUES (%s,%s)""",(api_key, session.user_id))
+        cur.execute("""INSERT INTO DigitalOcean_user (api_key, user_id) VALUES (%s,%s)""",(api_key, session['user_id']))
         db.commit()
     except:
         print("Failed adding to database")
