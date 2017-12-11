@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% block body %}
+{% if error %}
+<p class=error><strong>Error:</strong> {{ error }}{% endif %}
+
+
+    <section id="banner">
+    <h2>Select Preset</h2>
+
+
+    </section>
+    <form action="{{ url_for('preset_selection') }}" method=post>
+        <div class="row uniform 50%">
+        <select>
+            {% for key, value in presets.items() %}
+            <option value="{{key}}">{{value}}</option>
+            {% endfor %}
+            <li><a href="/" class="button">Learn More</a></li>
+        </select>
+        </div>
+        </form>
+{% endblock %}

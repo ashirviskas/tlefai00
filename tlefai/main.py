@@ -24,7 +24,6 @@ def mains():
     return render_template('index.html')
 
 
-
 @app.route('/logout/')
 def logout():
     session.pop('user_id')
@@ -83,6 +82,7 @@ def confirmServerpilotAPIKeys():
             error = "Bad keys"
     return render_template("confirmServerPilotAPIKeys.html", error = error)
 
+
 @app.route('/confirmDigitalOceanAPIKeys/', methods=['POST', 'GET'])
 def confirmDigitalOceanAPIKeys():
     error = None
@@ -93,6 +93,7 @@ def confirmDigitalOceanAPIKeys():
         else:
             error = "Bad keys"
     return render_template("confirmDigitalOceanAPIKeys.html", error = error)
+
 
 @app.route('/confirmCloudFlareAPIKeys/', methods=['POST', 'GET'])
 def confirmCloudFlareAPIKeys():
@@ -105,6 +106,23 @@ def confirmCloudFlareAPIKeys():
         else:
             error = "Bad keys"
     return render_template("confirmCloudFlareAPIKeys.html", error = error)
+
+
+@app.route('/preset_selection/', methods=['POST', 'GET'])
+def preset_selection():
+    error = None
+    presets = {}
+    presets["1"] = "Presetas 1"
+    presets["2"] = "Presetas 2"
+    if request.method == 'POST':
+        api_key = request.form['api_key']
+        email = request.form['email']
+        if CloudFlare_Valdiklis.patikrinti_api_key(session, db, email, api_key):
+            return "Keys confirmed"
+        else:
+            error = "Bad keys"
+    return render_template("preset_selection.html", presets=presets)
+
 
 app.secret_key = 'thisforloggingin' #secret phrase for session
 app.run(host='0.0.0.0')
