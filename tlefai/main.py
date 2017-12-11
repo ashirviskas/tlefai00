@@ -10,6 +10,7 @@ from tlefai import kliento_autorizacijos_valdiklis
 from tlefai import kliento_registracijos_valdiklis
 from tlefai import ServerPilot_valdiklis
 from tlefai import DigitalOcean_valdiklis
+from tlefai import CloudFlare_Valdiklis
 
 
 
@@ -93,6 +94,17 @@ def confirmDigitalOceanAPIKeys():
             error = "Bad keys"
     return render_template("confirmDigitalOceanAPIKeys.html", error = error)
 
+@app.route('/confirmCloudFlareAPIKeys/', methods=['POST', 'GET'])
+def confirmCloudFlareAPIKeys():
+    error = None
+    if request.method == 'POST':
+        api_key = request.form['api_key']
+        email = request.form['email']
+        if CloudFlare_Valdiklis.patikrinti_api_key(session, db, email, api_key ):
+            return "Keys confirmed"
+        else:
+            error = "Bad keys"
+    return render_template("confirmCloudFlareAPIKeys.html", error = error)
 
 app.secret_key = 'thisforloggingin' #secret phrase for session
 app.run(host='0.0.0.0')
