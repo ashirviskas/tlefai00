@@ -88,6 +88,7 @@ def confirmDigitalOceanAPIKeys():
     if request.method == 'POST':
         api_key = request.form['api_key']
         if DigitalOcean_valdiklis.patikrinti_api_key(session, db, api_key):
+            DigitalOcean_valdiklis.generuoti_ssh_raktus(session, db)
             return "Keys confirmed"
         else:
             error = "Bad keys"
