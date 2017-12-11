@@ -94,5 +94,5 @@ def confirmDigitalOceanAPIKeys():
     return render_template("confirmDigitalOceanAPIKeys.html", error = error)
 
 
-app.secret_key = 'thisforloggingin'
+app.secret_key = 'thisforloggingin' #secret phrase for session
 app.run(host='0.0.0.0')
