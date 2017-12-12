@@ -1,0 +1,58 @@
+{% extends "layout_common.html" %}
+{% block body %}
+{% if error %}
+<p class=error><strong>Error:</strong> {{ error }}</p>{% endif %}
+    <section id="banner">
+        <h2>Configure DigitalOcean</h2>
+    </section>
+<center>
+</center>
+   <div class="row">
+      <div class="12u">
+         <section class="box">
+            <form action="{{ url_for('preset_selection') }}" method=post>
+                <div class="row uniform 50%">
+                <div class="8u 12u(mobilep)">
+                    <input type="text" name="name" id="name" placeholder="Droplet Name">
+                </div>
+                <div class="8u 12u(mobilep)">
+                    <input type="text" name="region" id="region" placeholder="Region">
+                </div>
+                <div class="8u 12u(mobilep)">
+                    <input type="text" name="size" id="size" placeholder="Size">
+                </div>
+                <div class="8u 12u(mobilep)">
+                    <input type="text" name="image" id="image" placeholder="Image">
+                </div>
+                <div class="6u 12u(narrower)">
+                    <input type="checkbox" id="backups" name="backups">
+                    <label for="backups">Backups</label>
+                </div>
+                <div class="6u 12u(narrower)">
+                    <input type="checkbox" id="ipv6" name="ipv6">
+                    <label for="ipv6">IPV6</label>
+                </div>
+                <div class="6u 12u(narrower)">
+                    <input type="checkbox" id="private_networking" name="private_networking">
+                    <label for="private_networking">Private Networking</label>
+                </div>
+                <div class="8u 12u(mobilep)">
+                    <input type="text" name="volumes" id="volumes" placeholder="Volumes">
+                </div>
+                <div class="6u 12u(narrower)">
+                    <input type="checkbox" id="monitoring" name="monitoring">
+                    <label for="monitoring">Monitoring</label>
+                </div>
+                <div class="8u 12u(mobilep)">
+                    <input type="text" name="tags" value="tags" placeholder="Tags">
+                </div>
+                <div class="4u 12u(mobilep)">
+                    <input type="submit" value="Confirm">
+                </div>
+               </div>
+            </form>
+         </section>
+      </div>
+   </div>
+
+    {% endblock %}
