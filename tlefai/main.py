@@ -1,5 +1,5 @@
 
-from flask import Flask, url_for
+from flask import Flask, url_for, redirect
 from flask import render_template
 from flask import request
 from flask import session
@@ -62,7 +62,7 @@ def signup():
         if kliento_registracijos_valdiklis.uzregistruoti_vartotoja(db, request.form['username'],request.form['email'],
                                                                request.form['password']):
             print("Registration in success")
-            return render_template('begin.html', error="Registration success!")
+            return redirect("/login/")
         else:
             error = 'Invalid username/password'
     # the code below is executed if the request method
@@ -82,7 +82,7 @@ def confirmServerpilotAPIKeys():
         api_key = request.form['api_key']
         client_id = request.form['client_id']
         if ServerPilot_valdiklis.patikrinti_api_key(session, db, api_key, client_id):
-            return "Keys confirmed"
+            return redirect("/confirmCloudFlareAPIKeys/")
         else:
             error = "Bad keys"
     return render_template("confirmServerPilotAPIKeys.html", error = error)
@@ -95,7 +95,7 @@ def confirmDigitalOceanAPIKeys():
         api_key = request.form['api_key']
         if DigitalOcean_valdiklis.patikrinti_api_key(session, db, api_key):
             DigitalOcean_valdiklis.generuoti_ssh_raktus(session, db)
-            return "Keys confirmed"
+            return redirect("confirmServerpilotAPIKeys/")
         else:
             error = "Bad keys"
     return render_template("confirmDigitalOceanAPIKeys.html", error = error)
@@ -139,6 +139,17 @@ def configureDigitalOcean():
         else:
             error = 'Something went wrong'
     return render_template("configureDigitalOcean.html", error=error)
+
+@app.route('/configureCloudFlare/', methods=['POST', 'GET'])
+def configure_CloudFlare():
+    error = None
+    if request.method == 'POST':
+        if CloudFlare_Valdiklis.patvirtinti(db, request.form):
+            print("Registration in success")
+            return render_template('index.html', error="Registration success!")
+        else:
+            error = 'Invalid username/password'
+    return render_template("configureCloudFlare.html", error=error)
 
 
 @app.route('/begin/')
