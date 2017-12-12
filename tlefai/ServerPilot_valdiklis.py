@@ -27,8 +27,15 @@ def sudeti_raktus_i_lentele(session, db, api_key, client_id):
         return False
     return
 
-def pasirinkti_preset():
-    return
+
+def parinkti_preset(db, preset_id):
+    cur = db.cursor()
+    cur.execute("SELECT * FROM ServerPilot_preset WHERE presetID=%s", str(preset_id))
+    preset = cur.fetchall()[0]
+    print(preset)
+    return preset
+
+
 def patvirtinti():
     return
 def prideti_i_statistika():
