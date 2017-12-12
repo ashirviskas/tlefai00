@@ -25,10 +25,21 @@ def sudeti_raktus_i_lentele(session, db, api_key, email):
         print("Failed adding to database")
         return False
     return
+def patvirtinti(session, db, data):
+    prideti_i_statistika_preset(session, db, data)
+
+def prideti_i_statistika_preset(session, db, data):
+    print(str(data['monitoring']))
+    cur = db.cursor()
+
+    return
+
+def prideti_i_statistika_Firewall():
+    return
 
 def pasirinkti_preset():
     return
-def patvirtinti():
-    return
+
 def prideti_i_statistika():
     return
+
