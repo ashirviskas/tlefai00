@@ -87,34 +87,35 @@ def ideti_SSH_raktus(session, db, public_key, private_key):
 
 def patvirtinti(session, db, data):
     prideti_i_statistika(session, db, data)
+    siusti_parinktis_i_API(session, db)
 
 
 def prideti_i_statistika(session, db, data):
     print(str(data['monitoring']))
     cur = db.cursor()
     try:
-        cur.execute("""INSERT INTO DigitalOcean_preset (name, region, size, image, backups, ipv6, private_networking, 
-        volumes, monitoring, tags) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",(data['name'],data['region'],data['size'],
-                                                                        data['image'],data['backups'],data['ipv6'],
-                                                                        data['private_networking'],data['volumes'],
-                                                                        data['monitoring'],data['tags']))
-        db.commit()
+         cur.execute("""INSERT INTO DigitalOcean_preset (name, region, size, image, backups, ipv6, private_networking, 
+         volumes, monitoring, tags) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",(data['name'],data['region'],data['size'],
+                                                                    data['image'],data['backups'],data['ipv6'],
+                                                                    data['private_networking'],data['volumes'],
+                                                                    data['monitoring'],data['tags']))
+         db.commit()
     except:
         print("Failed adding to database")
         return False
 
-    cur.execute("SELECT presetId FROM DigitalOcean_preset ORDER BY ID DESC")
+    cur.execute("SELECT presetId FROM DigitalOcean_preset ORDER BY presetID DESC")
     last_inserted_id = cur.fetchall()[0][0]
 
     try:
-        cur.execute("""INSERT INTO Chosen_preset (userid, digitaloceanid, date_of_selection) 
+        cur.execute("""INSERT INTO Chosen_Preset (userid, digitaloceanid, date_of_selection) 
                        VALUES (%s,%s,%s)""",(str(session['user_id']), last_inserted_id, strftime("%Y-%m-%d %H:%M:%S",                                                                              gmtime())))
         db.commit()
     except:
         print("Failed adding to database")
         return False
 
-    cur.execute("SELECT chosenID FROM Chosen_preset WHERE userid = %s ORDER BY chosenID DESC",
+    cur.execute("SELECT chosenID FROM Chosen_Preset WHERE userid = %s ORDER BY chosenID DESC",
                 str(session['user_id']))
     session['chosen_id'] = cur.fetchall()[0][0]
     return True
@@ -131,16 +132,20 @@ def siusti_parinktis_i_API(session, db):
     cur.execute("SELECT api_key FROM DigitalOcean_user WHERE user_id=%s ORDER BY ID DESC", str(session['user_id']))
     api_key = cur.fetchall()[0][0]
 
-    cur.execute("SELECT TOP 1 dp.* FROM DigitalOcean_preset dp LEFT JOIN Chosen_preset cp ON "
-                "(cp.digitaloceanID = dp.presetID) WHERE user_id=%s ORDER BY ID DESC", str(session['user_id']))
+    cur.execute("SELECT dp.* FROM DigitalOcean_preset dp LEFT JOIN Chosen_Preset cp ON "
+                "(cp.digitaloceanID = dp.presetID) WHERE cp.userid=%s ORDER BY presetID DESC", str(session['user_id']))
     data = cur.fetchone()
 
+    cur.execute("SELECT dd.fingerprint FROM DigitalOcean_droplet dd LEFT JOIN DigitalOcean_user du ON "
+                "(dd.user_id = du.id) WHERE du.user_id=%s ORDER BY droplet_ID DESC", str(session['user_id']))
+    sshkey = cur.fetchone()[0]
+    print(sshkey)
     api_link = 'https://api.digitalocean.com/v2/droplets'
-    api_data = {"name":data['name'],"region":data['region'],"size":data['size'],"image":data['image'],
-                "ssh_keys":data['ssh_keys'],"backups":data['backups'],"ipv6":data['ipv6'],"user_data":data['user_data'],
-                "private_networking":data['private_networking'],"volumes": data['volumes'],"tags":data['tags']}
+    api_data = {"name":data[1],"region":data[2],"size":data[3],"image":data[4],
+                "ssh_keys": [sshkey],"backups":False,"ipv6":False,"user_data": "",
+                "private_networking": False,"volumes": [data[8]],"tags": [data[10]]}
     headers = {"Content-Type": "application/json", "Authorization": "Bearer " + api_key}
-    response = requests.post(api_link, headers=headers, params=api_data)
+    response = requests.post(api_link, headers=headers, json=api_data)
     if response.status_code == 202:
         print("Droplet successfully created")
         return True
