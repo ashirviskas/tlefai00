@@ -14,18 +14,16 @@
                <div class="row uniform 50%">
                   <div class="12u">
                      <div class="select-wrapper">
-                        <select>
+                        <select name="preset_id">
                            {% for key, value in presets.items() %}
                            <option value="{{key}}">{{value}}</option>
                            {% endfor %}
-                           <li><a href="/" class="button">Learn More</a></li>
                         </select>
                      </div>
                   </div>
-                  <div class="6u 12u(narrower)">
-                     <input type="checkbox" id="copy" name="copy">
-                     <label for="copy">Pažymėk mane</label>
-                  </div>
+                  <div class="4u 12u(mobilep)">
+                    <input type="submit" value="Select Preset">
+                </div>
                </div>
             </form>
          </section>

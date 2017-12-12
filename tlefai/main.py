@@ -19,6 +19,11 @@ DBpassword_ = open("database.txt", "r").readline()[:-1]
 db = MySQLdb.connect(host="159.203.142.248", user="root", passwd=DBpassword_, db="tlefdatabase")
 
 
+def pasirinkti_preset(preset_id):
+    session["preset_id"] = preset_id
+    return
+
+
 @app.route('/')
 def mains():
     return render_template('index.html')
@@ -41,7 +46,7 @@ def login():
             print("Login success")
 
             if kliento_autorizacijos_valdiklis.prisijungti(db, request.form['email'], session):
-                return render_template('index.html')
+                return render_template('begin.html')
         else:
             error = 'Invalid username/password'
     # the code below is executed if the request method
@@ -57,7 +62,7 @@ def signup():
         if kliento_registracijos_valdiklis.uzregistruoti_vartotoja(db, request.form['username'],request.form['email'],
                                                                request.form['password']):
             print("Registration in success")
-            return render_template('index.html', error="Registration success!")
+            return render_template('begin.html', error="Registration success!")
         else:
             error = 'Invalid username/password'
     # the code below is executed if the request method
@@ -111,17 +116,17 @@ def confirmCloudFlareAPIKeys():
 
 @app.route('/preset_selection/', methods=['POST', 'GET'])
 def preset_selection():
+    cur = db.cursor()
+    cur.execute("SELECT * FROM Preset")
+    presets_db = cur.fetchall()
     error = None
     presets = {}
-    presets["1"] = "Presetas 1"
-    presets["2"] = "Presetas 2"
+    for preset in presets_db:
+        presets[preset[0]]=preset[1]
     if request.method == 'POST':
-        api_key = request.form['api_key']
-        email = request.form['email']
-        if CloudFlare_Valdiklis.patikrinti_api_key(session, db, email, api_key):
-            return "Keys confirmed"
-        else:
-            error = "Bad keys"
+        preset_id = request.form['preset_id']
+        print(preset_id)
+        pasirinkti_preset(preset_id)
     return render_template("preset_selection.html", presets=presets)
 
 @app.route('/configureDigitalOcean/', methods=['POST', 'GET'])
@@ -134,6 +139,11 @@ def configure_DigitalOcean():
         else:
             error = 'Invalid username/password'
     return render_template("configureDigitalOcean.html", error=error)
+
+
+@app.route('/begin/')
+def begin():
+    return render_template("begin.html")
 
 
 app.secret_key = 'thisforloggingin' #secret phrase for session

@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+{% block body %}
+{% if error %}
+<p class=error><strong>Error:</strong> {{ error }}{% endif %}
+
+
+    <section id="banner">
+    <h2>Success</h2>
+
+    <p>Click Begin to start configuring your server</p>
+    <ul class="actions">
+        <li><a href="/preset_selection/" class="button special">BEGIN</a></li>
+    </ul>
+</section>
+{% endblock %}
