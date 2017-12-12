@@ -140,6 +140,17 @@ def configure_DigitalOcean():
             error = 'Invalid username/password'
     return render_template("configureDigitalOcean.html", error=error)
 
+@app.route('/configureCloudFlare/', methods=['POST', 'GET'])
+def configure_CloudFlare():
+    error = None
+    if request.method == 'POST':
+        if CloudFlare_Valdiklis.patvirtinti(db, request.form):
+            print("Registration in success")
+            return render_template('index.html', error="Registration success!")
+        else:
+            error = 'Invalid username/password'
+    return render_template("configureCloudFlare.html", error=error)
+
 
 @app.route('/begin/')
 def begin():

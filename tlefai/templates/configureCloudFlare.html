@@ -1,0 +1,161 @@
+{% extends "layout_common.html" %}
+{% block body %}
+{% if error %}
+<p class=error><strong>Error:</strong> {{ error }}</p>{% endif %}
+    <section id="banner">
+        <h2>Configure CloudFlare</h2>
+    </section>
+<center>
+</center>
+   <div class="row">
+      <div class="12u">
+         <section class="box">
+            <form action="{{ url_for('preset_selection') }}" method=post>
+                <div class="row uniform 50%">
+                    <div>
+                            Type:
+                             <select name="type">
+                                <option value="empty"></option>
+                                <option value="A">A</option>
+
+                                <option value="AAAA">AAAA</option>
+                                <option value="CNAME">CNAME</option>
+                                <option value="TXT">TXT</option>
+                                <option value="SRV">SRV</option>
+                                <option value="LOC">LOC</option>
+                                <option value="MX">MX</option>
+                                <option value="NS">NS</option>
+                                <option value="SPF">SPF</option>
+                                <option value="read only">read only</option>
+                             </select>
+
+                    </div>
+
+                <div class="8u 12u(mobilep)">
+                    <input type="text" name="name" id="name" placeholder="DNS Record Name">
+                </div>
+
+                <div class="8u 12u(mobilep)">
+                    <input type="text" name="content" id="content" placeholder="DNS record content. Egz 127.0.0.1">
+                </div>
+
+                <div class="8u 12u(mobilep)">
+                    <input type="text" name="ttl" id="ttl" placeholder="Time tolive for DNS record min value 120">
+                </div>
+
+                <div class="6u 12u(narrower)">
+                    <input type="checkbox" id="proxied" name="proxied">
+                    <label for="proxied">Proxied</label>
+                </div>
+                    <div>
+                        CoudFlare Preset SSL
+                    </div>
+
+                 <div class="8u 12u(mobilep)">
+                    <input type="text" name="ttl" id="priority" placeholder="Certifikate priority in request">
+                </div>
+                <div class="8u 12u(mobilep)">
+                    <input type="text" name="ttl" id="hosts" placeholder="The valid hosts for certificate">
+                </div>
+                <div class="8u 12u(mobilep)">
+                    <input type="text" name="ttl" id="zoneID" placeholder="Zone identifier tag">
+                </div>
+                    <div>
+                            Status:
+                        <select name="type">
+                                <option value="Active">Active</option>
+
+                                <option value="Expired">Expired</option>
+                                <option value="Deleted">Deleted</option>
+
+                        </select>
+                    </div>
+
+                <div class="8u 12u(mobilep)">
+                    <input type="text" name="signature" id="signature" placeholder="The type of hash used for the certificate">
+                </div>
+                <div class="8u 12u(mobilep)">
+                    <input type="text" name="certificate" id="certificate" placeholder="The zone's SSL certificate">
+                </div>
+                <div class="8u 12u(mobilep)">
+                    <input type="text" name="ttl" id="privateKey" placeholder="The zone's private Key">
+                </div>
+
+                <div>
+                    CloudFlare Firewall </span>
+                </div>
+                <div class="8u 12u(mobilep)">
+                    <input type="text" name="id" id="id" placeholder="Acces ule identifier tag">
+                </div>
+
+                    <DIV>
+
+
+                        The action to apply to a matched request
+                            <select name="mode">
+                                    <option value="Block">Block</option>
+                                    <option value="Challange">Challange</option>
+                                    <option value="Whitelist">Whitelist</option>
+                                    <option value="Js_challange">Js_challange</option>
+
+                           </select>
+                    </DIV>
+
+               <div class="8u 12u(mobilep)">
+                    <input type="text" name="vlueAdress" id="The IP address to target in requests" placeholder="Search by IP, or country code">
+                </div>
+                <div class="8u 12u(mobilep)">
+                    <input type="text" name="valueRange" id="The IP range to target in requests. Limited to /16 and /24" placeholder="Search by IP, or country code">
+                </div>
+                <div class="8u 12u(mobilep)">
+                    <input type="text" name="valueCountryCode" id="The 2-digit country code to traget in requests" placeholder="Search by IP, or country code">
+                </div>
+                <div>
+                Whether to match all search requirements or atleast one(any)
+               <select name="match">
+                        <option value="all">all</option>
+                        <option value="any">any</option>
+
+               </select>
+                </div>
+               <div class="8u 12u(mobilep)">
+                    <input type="text" name="configurationValue" id="configurationValue" placeholder="Search by IP, or country code">
+                </div>
+
+                <div>
+                    Order:
+                    Field to order rules by
+                <select name="order">
+                        <option value="Configuration_target">Configuration Target</option>
+                        <option value="Configuration_value">Configuration value</option>
+                        <option value="mode">mode</option>
+               </select>
+                </div>
+               <div class="8u 12u(mobilep)">
+                    <input type="text" name="perPage" id="Number of rules per page" placeholder="Search by IP, or country code">
+               </div>
+                <div>
+               Configuration target
+               The rule configuration target
+
+               <select name="match">
+                        <option value="Ip">IP</option>
+                        <option value="IP_range">IP range</option>
+                        <option value="Country_code">country code</option>
+               </select>
+               </div>
+               <div>
+               Direction:
+               Direction to order rules
+               <select name="direction">
+                        <option value="Ascending">Ascendind</option>
+                        <option value="Descending">Descending</option>
+
+               </select>
+               </div>
+            </form>
+         </section>
+      </div>
+   </div>
+
+    {% endblock %}
