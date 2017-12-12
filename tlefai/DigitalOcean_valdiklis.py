@@ -2,7 +2,7 @@ import requests, json
 from cryptography.hazmat.primitives import serialization as crypto_serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.backends import default_backend as crypto_default_backend
-from random import randint
+from time import gmtime, strftime
 
 
 def patikrinti_api_key(session, db, api_key):
@@ -85,16 +85,44 @@ def ideti_SSH_raktus(session, db, public_key, private_key):
     return True
 
 
-def patvirtinti():
+def patvirtinti(session, db, data):
+    prideti_i_statistika(session, db, data)
+
+
+def prideti_i_statistika(session, db, data):
+    cur = db.cursor()
+    try:
+        cur.execute("""INSERT INTO DigitalOcean_preset (name, region, size, image, backups, ipv6, private_networking, 
+        volumes, monitoring, tags) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",(data['name'],data['region'],data['size'],
+                                                                        data['image'],data['backups'],data['ipv6'],
+                                                                        data['private_networking'],data['volumes'],
+                                                                        data['monitoring'],data['tags']))
+        db.commit()
+    except:
+        print("Failed adding to database")
+        return False
+
+    cur.execute("SELECT presetId FROM DigitalOcean_preset ORDER BY ID DESC")
+    last_inserted_id = cur.fetchall()[0][0]
+
+    try:
+        cur.execute("""INSERT INTO Chosen_preset (userid, digitaloceanid, date_of_selection) 
+                       VALUES (%s,%s,%s)""",(str(session['user_id']), last_inserted_id, strftime("%Y-%m-%d %H:%M:%S",                                                                              gmtime())))
+        db.commit()
+    except:
+        print("Failed adding to database")
+        return False
+
+    cur.execute("SELECT chosenID FROM Chosen_preset WHERE userid = %s ORDER BY chosenID DESC",
+                str(session['user_id']))
+    session['chosen_id'] = cur.fetchall()[0][0]
     return True
 
 
-def prideti_i_statistika():
-    return True
-
-
-def parinkti_preset():
-    return True
+def parinkti_preset(session, db):
+    cur = db.cursor()
+    cur.execute("SELECT dp.* FROM DigitalOcean_preset dp LEFT JOIN Preset p WHERE p.id = ", str(session['preset_id']))
+    return cur.fetchall()
 
 
 def siusti_parinktis_i_API(session, db):
@@ -102,22 +130,21 @@ def siusti_parinktis_i_API(session, db):
     cur.execute("SELECT api_key FROM DigitalOcean_user WHERE user_id=%s ORDER BY ID DESC", str(session['user_id']))
     api_key = cur.fetchall()[0][0]
 
+    cur.execute("SELECT TOP 1 dp.* FROM DigitalOcean_preset dp LEFT JOIN Chosen_preset cp ON "
+                "(cp.digitaloceanID = dp.presetID) WHERE user_id=%s ORDER BY ID DESC", str(session['user_id']))
+    data = cur.fetchone()
+
     api_link = 'https://api.digitalocean.com/v2/droplets'
-    api_data = {"name":"example.com","region":"nyc3","size":"512mb","image":"ubuntu-14-04-x64","ssh_keys":"null",
-                "backups":"false","ipv6":"true","user_data":"null","private_networking":"null","volumes": "null","tags":["web"]}
-    headers = {"Content-Type": "application/json", "Authorization": "Bearer" + api_key}
-    response = requests.post(api_link, headers=headers, data=api_data)
-    print(response)
-    if response.status_code == 200:
-        print("Authorization successful")
-        if ideti_API_rakta(session, db, api_key):
-            print("Keys saved to database")
-            return True
-        else:
-            print("Failed to save keys to database. Please try again")
-            return False
+    api_data = {"name":data['name'],"region":data['region'],"size":data['size'],"image":data['image'],
+                "ssh_keys":data['ssh_keys'],"backups":data['backups'],"ipv6":data['ipv6'],"user_data":data['user_data'],
+                "private_networking":data['private_networking'],"volumes": data['volumes'],"tags":data['tags']}
+    headers = {"Content-Type": "application/json", "Authorization": "Bearer " + api_key}
+    response = requests.post(api_link, headers=headers, params=api_data)
+    if response.status_code == 202:
+        print("Droplet successfully created")
+        return True
     else:
-        print("Authorization error")
+        print(str(response.text))
         return False
 
 
