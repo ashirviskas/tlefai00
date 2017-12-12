@@ -130,14 +130,14 @@ def preset_selection():
     return render_template("preset_selection.html", presets=presets)
 
 @app.route('/configureDigitalOcean/', methods=['POST', 'GET'])
-def configure_DigitalOcean():
+def configureDigitalOcean():
     error = None
     if request.method == 'POST':
-        if DigitalOcean_valdiklis.patvirtinti(db, request.form):
-            print("Registration in success")
-            return render_template('index.html', error="Registration success!")
+        if DigitalOcean_valdiklis.patvirtinti(session, db, request.form):
+            print("Data saved")
+            # return render_template('index.html', error="Registration success!")
         else:
-            error = 'Invalid username/password'
+            error = 'Something went wrong'
     return render_template("configureDigitalOcean.html", error=error)
 
 @app.route('/configureCloudFlare/', methods=['POST', 'GET'])

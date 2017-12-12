@@ -90,6 +90,7 @@ def patvirtinti(session, db, data):
 
 
 def prideti_i_statistika(session, db, data):
+    print(str(data['monitoring']))
     cur = db.cursor()
     try:
         cur.execute("""INSERT INTO DigitalOcean_preset (name, region, size, image, backups, ipv6, private_networking, 
