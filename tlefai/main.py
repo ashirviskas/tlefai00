@@ -82,7 +82,7 @@ def confirmServerpilotAPIKeys():
         api_key = request.form['api_key']
         client_id = request.form['client_id']
         if ServerPilot_valdiklis.patikrinti_api_key(session, db, api_key, client_id):
-            return redirect("/confirmCloudFlareAPIKeys/")
+            return render_template("confirmCloudFlareAPIKeys.html", error="ServerPilot API keys confirmed!")
         else:
             error = "Bad keys"
     return render_template("confirmServerPilotAPIKeys.html", error = error)
@@ -95,7 +95,7 @@ def confirmDigitalOceanAPIKeys():
         api_key = request.form['api_key']
         if DigitalOcean_valdiklis.patikrinti_api_key(session, db, api_key):
             DigitalOcean_valdiklis.generuoti_ssh_raktus(session, db)
-            return redirect("confirmServerpilotAPIKeys/")
+            return render_template("confirmServerpilotAPIKeys.html", error="DigitalOcean keys confirmed")
         else:
             error = "Bad keys"
     return render_template("confirmDigitalOceanAPIKeys.html", error = error)
@@ -124,9 +124,10 @@ def preset_selection():
     for preset in presets_db:
         presets[preset[0]]=preset[1]
     if request.method == 'POST':
-        preset_id = request.form['preset_id']
+        preset_id = request.form.get('preset_id')
         print(preset_id)
         pasirinkti_preset(preset_id)
+        return redirect("/confirmDigitalOceanAPIKeys/")
     return render_template("preset_selection.html", presets=presets)
 
 @app.route('/configureDigitalOcean/', methods=['POST', 'GET'])
