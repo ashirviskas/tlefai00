@@ -29,26 +29,40 @@ def sudeti_raktus_i_lentele(session, db, api_key, client_id):
 
 
 def parinkti_preset(db, preset_id):
-    cur = db.cursor()
-    cur.execute("SELECT sp.*, spw.* FROM ServerPilot_preset sp "
-                "LEFT JOIN ServerPilot_preset_wordpress spw ON spw.wordpress_presetID = sp.serverpilot_presetID"
-                " WHERE sp.presetID=%s", str(preset_id))
-    preset = cur.fetchone()
-    print(preset)
-    return preset
-
+    if preset_id is not None:
+        cur = db.cursor()
+        cur.execute("SELECT sp.*, spw.* FROM ServerPilot_preset sp "
+                    "LEFT JOIN ServerPilot_preset_wordpress spw ON spw.wordpress_presetID = sp.serverpilot_presetID"
+                    " WHERE sp.presetID=%s", str(preset_id))
+        preset = cur.fetchone()
+        data = {}
+        description = cur.description
+        for i in range(len(description)):
+            data[description[i][0]]=preset[i]
+        print(data)
+        return data
+    return None
 
 def siusti_parinktis_i_API(session, db):
     cur = db.cursor()
     cur.execute("SELECT api_key FROM ServerPilot_user WHERE user_id=%s ORDER BY ID DESC", str(session['user_id']))
-    data_to_send=cur.fetchall()
-    print(data_to_send)
     api_key = cur.fetchall()[0][1]
     client_id = cur.fetchall()[0][3]
+    cur.execute("SELECT * FROM Chosen_Preset WHERE user_id=%s ORDER BY date_of_selection DESC", str(session['user_id']))
+    sp_preset_id = cur.fetchone()[4]
+    cur.execute("SELECT sp.*, spw.* FROM ServerPilot_preset sp "
+                "LEFT JOIN ServerPilot_preset_wordpress spw ON spw.wordpress_presetID = sp.serverpilot_presetID"
+                " WHERE sp.presetID=%s", str(sp_preset_id))
+    data_sp = cur.fetchone()
+    ServerPilot_preset_id = data_sp[4]
+
     print(api_key, client_id)
+
+
 
 def patvirtinti(session, db, data):
     prideti_i_statistika(session, db, data)
+
 
 def prideti_i_statistika(session, db, data):
     cur = db.cursor()

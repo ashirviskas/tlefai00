@@ -145,13 +145,18 @@ def configureDigitalOcean():
 @app.route('/configureServerPilot/', methods=['POST', 'GET'])
 def configureServerPilot():
     error = None
+    preset = None
+    preset_id = 1#session.get("preset_id")
+    if (preset_id is not None):
+        preset = ServerPilot_valdiklis.parinkti_preset(db, preset_id)
+        print(preset)
     if request.method == 'POST':
         if ServerPilot_valdiklis.patvirtinti(session, db, request.form):
             print("Data saved")
             # return render_template('index.html', error="Registration success!")
         else:
             error = 'Something went wrong'
-    return render_template("configureServerPilot.html", error=error)
+    return render_template("configureServerPilot.html", error=error, preset = preset)
 
 
 
