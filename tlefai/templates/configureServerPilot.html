@@ -1,0 +1,69 @@
+{% extends "layout_common.html" %}
+{% block body %}
+{% if error %}
+<p class=error><strong>Error:</strong> {{ error }}</p>{% endif %}
+    <section id="banner">
+        <h2>Configure DigitalOcean</h2>
+    </section>
+<center>
+</center>
+   <div class="row">
+      <div class="12u">
+         <section class="box">
+            <form action="{{ url_for('configureServerPilot') }}" method=post>
+                <div class="row uniform 50%">
+                    <div class="8u 12u(mobilep)">
+                        <input type="text" name="username" id="username" placeholder="Username">
+                    </div>
+                    <div class="8u 12u(mobilep)">
+                        <input type="text" name="password" id="password" placeholder="Password">
+                    </div>
+                    <div class="8u 12u(mobilep)">
+                        <input type="text" name="sysuser" id="sysuser" placeholder="Sysuser">
+                    </div>
+                    <div class="8u 12u">
+                     <div class="select-wrapper">
+                        <select name="runtime">
+                           {% for key, value in [] %}
+                           <option value="{{key}}">{{value}}</option>
+                           {% endfor %}
+                        </select>
+                     </div>
+                    </div>
+                    <div class="8u 12u(mobilep)">
+                        <input type="text" name="domain" id="domain" placeholder="Domain">
+                    </div>
+                    <div class="6u 12u(narrower)">
+                        <input type="checkbox" name="autoupdates" id="autoupdates" checked>
+                        <label for="autoupdates">Auto updates</label>
+                    </div>
+                    <div class="6u 12u(narrower)">
+                        <input type="checkbox" id="firewall" name="firewall">
+                        <label for="firewall">Firewall</label>
+                    </div>
+                    <div class="6u 12u(narrower)">
+                        <input type="checkbox" id="deny_unknown_domains" name="deny_unknown_domains">
+                        <label for="deny_unknown_domains">Deny Unknown Domains</label>
+                    </div>
+                    <div class="8u 12u(mobilep)">
+                        <input type="text" name="admin_user" id="admin_user" placeholder="Admin username">
+                    </div>
+                    <div class="8u 12u(mobilep)">
+                        <input type="text" name="admin_password" id="admin_password" placeholder="Admin password">
+                    </div>
+                    <div class="8u 12u(mobilep)">
+                        <input type="text" name="site_title" id="site_title" placeholder="Site title">
+                    </div>
+                    <div class="8u 12u(mobilep)">
+                        <input type="text" name="admin_email" id="admin_email" placeholder="Admin email">
+                    </div>
+                    <div class="4u 12u(mobilep)">
+                        <input type="submit" value="Confirm">
+                    </div>
+               </div>
+            </form>
+         </section>
+      </div>
+   </div>
+
+    {% endblock %}

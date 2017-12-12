@@ -140,6 +140,20 @@ def configureDigitalOcean():
             error = 'Something went wrong'
     return render_template("configureDigitalOcean.html", error=error)
 
+
+@app.route('/configureServerPilot/', methods=['POST', 'GET'])
+def configureServerPilot():
+    error = None
+    if request.method == 'POST':
+        if ServerPilot_valdiklis.patvirtinti(session, db, request.form):
+            print("Data saved")
+            # return render_template('index.html', error="Registration success!")
+        else:
+            error = 'Something went wrong'
+    return render_template("configureServerPilot.html", error=error)
+
+
+
 @app.route('/configureCloudFlare/', methods=['POST', 'GET'])
 def configure_CloudFlare():
     error = None
