@@ -30,13 +30,21 @@ def sudeti_raktus_i_lentele(session, db, api_key, client_id):
 
 def parinkti_preset(db, preset_id):
     cur = db.cursor()
-    cur.execute("SELECT * FROM ServerPilot_preset WHERE presetID=%s", str(preset_id))
-    preset = cur.fetchall()[0]
+    cur.execute("SELECT sp.*, spw.* FROM ServerPilot_preset sp "
+                "LEFT JOIN ServerPilot_preset_wordpress spw ON spw.wordpress_presetID = sp.serverpilot_presetID"
+                " WHERE sp.presetID=%s", str(preset_id))
+    preset = cur.fetchone()
     print(preset)
     return preset
 
 
-def patvirtinti():
-    return
+def siusti_parinktis_i_API(session, db):
+    cur = db.cursor()
+    cur.execute("SELECT api_key FROM ServerPilot_user WHERE user_id=%s ORDER BY ID DESC", str(session['user_id']))
+    api_key = cur.fetchall()[0][1]
+    client_id = cur.fetchall()[0][3]
+    print(api_key, client_id)
+
+
 def prideti_i_statistika():
     return
