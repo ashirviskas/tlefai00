@@ -45,18 +45,28 @@ def parinkti_preset(db, preset_id):
 
 def siusti_parinktis_i_API(session, db):
     cur = db.cursor()
-    cur.execute("SELECT api_key FROM ServerPilot_user WHERE user_id=%s ORDER BY ID DESC", str(session['user_id']))
-    api_key = cur.fetchall()[0][1]
-    client_id = cur.fetchall()[0][3]
-    cur.execute("SELECT * FROM Chosen_Preset WHERE user_id=%s ORDER BY date_of_selection DESC", str(session['user_id']))
-    sp_preset_id = cur.fetchone()[4]
-    cur.execute("SELECT sp.*, spw.* FROM ServerPilot_preset sp "
-                "LEFT JOIN ServerPilot_preset_wordpress spw ON spw.wordpress_presetID = sp.serverpilot_presetID"
-                " WHERE sp.presetID=%s", str(sp_preset_id))
-    data_sp = cur.fetchone()
-    ServerPilot_preset_id = data_sp[4]
-
-    print(api_key, client_id)
+    cur.execute("SELECT * FROM ServerPilot_user WHERE user_id=%s ORDER BY ID DESC", str(session['user_id']))
+    data = cur.fetchall()
+    # print(data)
+    api_key = data[0][1]
+    client_id = data[0][3]
+    try:
+        cur.execute("SELECT * FROM Chosen_Preset WHERE userID=%s ORDER BY date_of_selection DESC", str(session['user_id']))
+        ServerPilot_preset_id = cur.fetchone()[4] #1 works
+        # print(ServerPilot_preset_id)
+        cur.execute("SELECT sp.*, spw.* FROM ServerPilot_preset sp "
+                    "LEFT JOIN ServerPilot_preset_wordpress spw ON spw.wordpress_presetID = sp.serverpilot_presetID"
+                    " WHERE sp.presetID=%s", str(ServerPilot_preset_id))
+        data_sp = cur.fetchone()
+        data = {}
+        description = cur.description
+        for i in range(len(description)):
+            data[description[i][0]] = data_sp[i]
+    except:
+        print("Some errors")
+        return None
+    print(data)
+    return True
 
 
 
