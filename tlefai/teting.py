@@ -16,8 +16,8 @@ db = MySQLdb.connect(host="159.203.142.248", user="root", passwd=password_, db="
 #     print(row[2], " ", row[3])
 from tlefai import ServerPilot_valdiklis
 
-client_id = "cid_dgyKekddFH2yZTMt"
-api_key = "IdqKGa82Q1W4nehC7FXUe6e5PdWp03LUyQRadOdTcoo"
+client_id = ""
+api_key = ""
 session = {}
 session['user_id'] = 1
 
