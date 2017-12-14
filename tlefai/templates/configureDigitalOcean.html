@@ -12,43 +12,55 @@
          <section class="box">
             <form action="{{ url_for('configureDigitalOcean') }}" method=post>
                 <div class="row uniform 50%">
+                    <input type="hidden" name="monitoring" value="0">
                     <div class="8u 12u(mobilep)">
                         <input type="text" name="name" id="name" placeholder="Droplet Name">
                     </div>
                     <div class="8u 12u(mobilep)">
-                        <input type="text" name="region" id="region" placeholder="Region">
+                        <select name="region">
+                            <option value="">Select droplet region...</option>
+                            $regionoptions
+                        </select>
                     </div>
                     <div class="8u 12u(mobilep)">
-                        <input type="text" name="size" id="size" placeholder="Size">
+                        <select name="size">
+                            <option value="">Select droplet size...</option>
+                            $sizeoptions
+                        </select>
                     </div>
                     <div class="8u 12u(mobilep)">
-                        <input type="text" name="image" id="image" placeholder="Image">
+                        <select name="image">
+                            <option value="">Select droplet image...</option>
+                            $imageoptions
+                        </select>
                     </div>
                     <div class="6u 12u(narrower)">
-                        <input type="hidden" name="backups" value="0" >
                         <input type="checkbox" id="backups" name="backups" value="1">
                         <label for="backups">Backups</label>
                     </div>
                     <div class="6u 12u(narrower)">
-                        <input type="hidden" name="ipv6" value="0" >
                         <input type="checkbox" id="ipv6" name="ipv6" value="1">
                         <label for="ipv6">IPV6</label>
                     </div>
                     <div class="6u 12u(narrower)">
-                        <input type="hidden" name="private_networking" value="0" >
                         <input type="checkbox" id="private_networking" name="private_networking" value="1">
                         <label for="private_networking">Private Networking</label>
                     </div>
-                    <div class="8u 12u(mobilep)">
-                        <input type="text" name="volumes" id="volumes" placeholder="Volumes">
-                    </div>
                     <div class="6u 12u(narrower)">
                         <input type="checkbox" id="monitoring" name="monitoring" value="1">
-                        <input type="hidden" name="monitoring" value="0">
                         <label for="monitoring">Monitoring</label>
                     </div>
                     <div class="8u 12u(mobilep)">
-                        <input type="text" name="tags" value="tags" placeholder="Tags">
+                        <input type="text" name="volumesize" id="volumesize" placeholder="Volume size">
+                    </div>
+                    <div class="8u 12u(mobilep)">
+                        <input type="text" name="volumename" id="volumename" placeholder="Volume name">
+                    </div>
+                    <div class="8u 12u(mobilep)">
+                        <input type="text" name="tags" id="tags" placeholder="Tags">
+                    </div>
+                     <div class="8u 12u(mobilep)">
+                        <input type="text" name="userdata" id="userdata" placeholder="User data">
                     </div>
                     <div class="4u 12u(mobilep)">
                         <input type="submit" value="Confirm">

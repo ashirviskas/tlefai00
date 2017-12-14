@@ -3,7 +3,7 @@ from flask import Flask, url_for, redirect
 from flask import render_template
 from flask import request
 from flask import session
-import MySQLdb
+import MySQLdb, requests
 
 
 from tlefai import kliento_autorizacijos_valdiklis
@@ -133,13 +133,64 @@ def preset_selection():
 @app.route('/configureDigitalOcean/', methods=['POST', 'GET'])
 def configureDigitalOcean():
     error = None
+    cur = db.cursor()
+    cur.execute("SELECT api_key FROM DigitalOcean_user WHERE user_id=%s ORDER BY ID DESC", str(session['user_id']))
+    api_key = cur.fetchall()[0][0]
+    headers = {"Content-Type": "application/json", "Authorization": "Bearer " + api_key}
+
+    api_link = 'https://api.digitalocean.com/v2/regions'
+    response = requests.get(api_link, headers=headers)
+    response_data = response.json()
+    regionoptions = []
+    for value in response_data["regions"]:
+        regionoptions.append("<option value='" + value["slug"] + "'>" + value["name"] + "</option>")
+
+    api_link = 'https://api.digitalocean.com/v2/images?type=distribution'
+    response = requests.get(api_link, headers=headers)
+    response_data = response.json()
+    imageoptions = []
+    for value in response_data["images"]:
+        imageoptions.append("<option value='" + value["slug"] + "'>" + value["distribution"] + " " + value["name"] + "</option>")
+
+    api_link = 'https://api.digitalocean.com/v2/sizes'
+    response = requests.get(api_link, headers=headers)
+    response_data = response.json()
+    sizeoptions = []
+    for value in response_data["sizes"]:
+        sizeoptions.append("<option value='" + value["slug"] + "'>" + value["slug"] + "</option>")
+
+    # api_link = 'https://api.digitalocean.com/v2/volumes'
+    # response = requests.get(api_link, headers=headers)
+    # response_data = response.json()
+    # volumeoptions = []
+    # for value in response_data["volumes"]:
+    #     volumeoptions.append("<option value='" + value["id"] + "'>" + value["name"] + " " + value["size_gigabytes"] + " GB" + "</option>")
+
+    ####open the html template file, read it into 'content'
+    html_file = "./templates/configureDigitalOcean.html"
+    f = open(html_file, 'r')
+    content = f.read()
+    f.close()
+
+    ####replace the place holder with your python-generated list
+    content = content.replace("$regionoptions", '\n'.join(regionoptions))
+    content = content.replace("$imageoptions", '\n'.join(imageoptions))
+    content = content.replace("$sizeoptions", '\n'.join(sizeoptions))
+    # content = content.replace("$volumeoptions", '\n'.join(volumeoptions))
+
+    ####write content into the final html
+    output_html_file = "./templates/configureDigitalOceantemp.html"
+    f = open(output_html_file, 'w')
+    f.write(content)
+    f.close()
+
     if request.method == 'POST':
         if DigitalOcean_valdiklis.patvirtinti(session, db, request.form):
             print("Data saved")
             # return render_template('index.html', error="Registration success!")
         else:
             error = 'Something went wrong'
-    return render_template("configureDigitalOcean.html", error=error)
+    return render_template("configureDigitalOceantemp.html", error=error)
 
 
 @app.route('/configureServerPilot/', methods=['POST', 'GET'])

@@ -1,4 +1,4 @@
-import requests, json
+import requests, time
 from cryptography.hazmat.primitives import serialization as crypto_serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.backends import default_backend as crypto_default_backend
@@ -57,9 +57,7 @@ def generuoti_ssh_raktus(session, db):
 def ideti_SSH_raktus(session, db, public_key, private_key):
     cur = db.cursor()
     cur.execute("SELECT api_key FROM DigitalOcean_user WHERE user_id=%s ORDER BY ID DESC", str(session['user_id']))
-    print(public_key)
     api_key = cur.fetchall()[0][0]
-    print(api_key)
     api_link = 'https://api.digitalocean.com/v2/account/keys'
     api_data = {"name": "tlefaitest", "public_key": public_key}
     headers = {"Content-Type": "application/json", "Authorization": "Bearer " + api_key}
@@ -87,18 +85,44 @@ def ideti_SSH_raktus(session, db, public_key, private_key):
 
 def patvirtinti(session, db, data):
     prideti_i_statistika(session, db, data)
-    siusti_parinktis_i_API(session, db)
-
+    siusti_parinktis_i_API(session, db) #temporary here for testing
+    return True
 
 def prideti_i_statistika(session, db, data):
-    print(str(data['monitoring']))
+    backups = 0
+    if (data.get('backups') is not None):
+        backups = 1
+    ipv6 = 0
+    if (data.get('ipv6') is not None):
+        ipv6 = 1
+    private_networking = 0
+    if (data.get('private_networking') is not None):
+        private_networking = 1
+    monitoring = 0
+    if (data.get('monitoring') is not None):
+        monitoring = 1
+
     cur = db.cursor()
+    if data['volumename'] != "" and data['volumesize'] != "":
+        try:
+            cur.execute("""INSERT INTO DigitalOcean_preset_volumes (volumesize, volumename) 
+                           VALUES (%s,%s)""",(data['volumesize'], data['volumename']))
+            db.commit()
+        except:
+            print("Failed adding to database")
+            return False
+
+        cur.execute("SELECT volumeid FROM DigitalOcean_preset_volumes ORDER BY volumeID DESC"),
+        last_inserted_id = cur.fetchall()[0][0]
+    else:
+        last_inserted_id = None
+
     try:
          cur.execute("""INSERT INTO DigitalOcean_preset (name, region, size, image, backups, ipv6, private_networking, 
-         volumes, monitoring, tags) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",(data['name'],data['region'],data['size'],
-                                                                    data['image'],data['backups'],data['ipv6'],
-                                                                    data['private_networking'],data['volumes'],
-                                                                    data['monitoring'],data['tags']))
+          monitoring, tags, userdata, volumeid) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",(data['name'],data['region'],data['size'],
+                                                                    data['image'],backups,ipv6,
+                                                                    private_networking,monitoring,
+                                                                    data['tags'],data['userdata'], last_inserted_id))
          db.commit()
     except:
         print("Failed adding to database")
@@ -109,7 +133,7 @@ def prideti_i_statistika(session, db, data):
 
     try:
         cur.execute("""INSERT INTO Chosen_Preset (userid, digitaloceanid, date_of_selection) 
-                       VALUES (%s,%s,%s)""",(str(session['user_id']), last_inserted_id, strftime("%Y-%m-%d %H:%M:%S",                                                                              gmtime())))
+                       VALUES (%s,%s,%s)""",(str(session['user_id']), last_inserted_id, strftime("%Y-%m-%d %H:%M:%S", gmtime())))
         db.commit()
     except:
         print("Failed adding to database")
@@ -123,7 +147,9 @@ def prideti_i_statistika(session, db, data):
 
 def parinkti_preset(session, db):
     cur = db.cursor()
-    cur.execute("SELECT dp.* FROM DigitalOcean_preset dp LEFT JOIN Preset p WHERE p.id = ", str(session['preset_id']))
+    cur.execute("SELECT dp.*, dpv.volumesize, dpv.volumename FROM DigitalOcean_preset dp LEFT JOIN Preset p ON (p.digitaloceanID=dp.presetid) "
+                "LEFT JOIN DigitalOcean_preset_volumes dpv ON (dpv.volumeid=dp.volumeid) "
+                "WHERE p.id = ", str(session['preset_id']))
     return cur.fetchall()
 
 
@@ -132,25 +158,44 @@ def siusti_parinktis_i_API(session, db):
     cur.execute("SELECT api_key FROM DigitalOcean_user WHERE user_id=%s ORDER BY ID DESC", str(session['user_id']))
     api_key = cur.fetchall()[0][0]
 
-    cur.execute("SELECT dp.* FROM DigitalOcean_preset dp LEFT JOIN Chosen_Preset cp ON "
-                "(cp.digitaloceanID = dp.presetID) WHERE cp.userid=%s ORDER BY presetID DESC", str(session['user_id']))
+    cur.execute("SELECT dp.*, dpv.volumesize, dpv.volumename FROM DigitalOcean_preset dp LEFT JOIN Chosen_Preset cp ON "
+                "(cp.digitaloceanID = dp.presetID) LEFT JOIN DigitalOcean_preset_volumes dpv ON (dpv.volumeid=dp.volumeid) "
+                "WHERE cp.userid=%s ORDER BY presetID DESC", str(session['user_id']))
     data = cur.fetchone()
 
     cur.execute("SELECT dd.fingerprint FROM DigitalOcean_droplet dd LEFT JOIN DigitalOcean_user du ON "
                 "(dd.user_id = du.id) WHERE du.user_id=%s ORDER BY droplet_ID DESC", str(session['user_id']))
     sshkey = cur.fetchone()[0]
-    print(sshkey)
+
     api_link = 'https://api.digitalocean.com/v2/droplets'
     api_data = {"name":data[1],"region":data[2],"size":data[3],"image":data[4],
-                "ssh_keys": [sshkey],"backups":False,"ipv6":False,"user_data": "",
-                "private_networking": False,"volumes": [data[8]],"tags": [data[10]]}
+                "ssh_keys": [sshkey],"backups":data[5]!=0,"ipv6":data[6]!=0,"private_networking":data[7]!=0, "monitoring":data[8]!=0,
+                "tags":str(data[9]).split() ,"userdata": data[10]}
     headers = {"Content-Type": "application/json", "Authorization": "Bearer " + api_key}
     response = requests.post(api_link, headers=headers, json=api_data)
     if response.status_code == 202:
         print("Droplet successfully created")
-        return True
+        droplet_data = response.json()
     else:
         print(str(response.text))
         return False
 
+    if data[12] != None and data[13] != None:
+        api_link = 'https://api.digitalocean.com/v2/volumes'
+        api_data = {"size_gigabytes":data[12], "name": data[13], "description": "", "region": data[2]}
+        response = requests.post(api_link, headers=headers, json=api_data)
+        if response.status_code == 201:
+            print("Volume successfully created, waiting for 15 seconds to attach")
+            time.sleep(15)
+            api_link = 'https://api.digitalocean.com/v2/volumes/actions'
+            api_data = {"type": "attach", "volume_name": data[13], "region": data[2], "droplet_id": droplet_data["droplet"]["id"]}
+            response = requests.post(api_link, headers=headers, json=api_data)
+            if response.status_code == 202:
+                print("Volume successfully attached")
+            else:
+                print(str(response.text))
+        else:
+            print(str(response.text))
+
+    return True
 
