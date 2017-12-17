@@ -41,13 +41,16 @@ def prideti_i_statistika(session, db, data):
     signature=data.get("signature")
     certificate=data.get("certificate")
     private_key=data.get("private_key")
+
     try:
-        cur.execute("""INSERT INTO Cloudflare_preset_SSL (priority, hosts, zone_id, status, signature, certificate, private_key) VALUES (%s, %s, %s, %s, %s, %s, %s)""",
+        cur.execute("""INSERT INTO Cloudflare_preset_SSL (priority, hosts, zone_id, status, signature, certificate, private_key)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s)""",
                     (priority, hosts, zone_id, status, signature, certificate, private_key))
         db.commit()
     except:
         print("Failed adding to database ssl")
         return False
+
     # firewall setting
     id = data.get("id")
     mode = data.get("mode")
@@ -84,11 +87,8 @@ def prideti_i_statistika(session, db, data):
         return False
 
 
-    return
+    return True
 
 def pasirinkti_preset():
-    return
-
-def prideti_i_statistika():
     return
 
