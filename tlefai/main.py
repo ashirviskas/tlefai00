@@ -130,6 +130,7 @@ def preset_selection():
         return redirect("/confirmDigitalOceanAPIKeys/")
     return render_template("preset_selection.html", presets=presets)
 
+
 @app.route('/configureDigitalOcean/', methods=['POST', 'GET'])
 def configureDigitalOcean():
     error = None
@@ -198,6 +199,13 @@ def configureServerPilot():
     error = None
     preset = None
     preset_id = 1#session.get("preset_id")
+    runtimes = []
+    runtimes.append("php5.4")
+    runtimes.append("php5.5")
+    runtimes.append("php5.6")
+    runtimes.append("php7.0")
+    runtimes.append("php7.1")
+    runtimes.append("php7.2")
     if (preset_id is not None):
         preset = ServerPilot_valdiklis.parinkti_preset(db, preset_id)
         print(preset)
@@ -207,7 +215,7 @@ def configureServerPilot():
             # return render_template('index.html', error="Registration success!")
         else:
             error = 'Something went wrong'
-    return render_template("configureServerPilot.html", error=error, preset = preset)
+    return render_template("configureServerPilot.html", error=error, preset = preset, runtimes = runtimes)
 
 
 

@@ -23,11 +23,12 @@
                     </div>
                     <div class="8u 12u">
                      <div class="select-wrapper">
-                        <select name="runtime">
-                           {% for key, value in [] %}
-                           <option value="{{key}}">{{value}}</option>
+                        <select name="runtime" id="runtime">
+                           {% for runtime in runtimes %}
+                           <option value="{{runtime}}">{{runtime}}</option>
                            {% endfor %}
                         </select>
+                         <label for="runtime">Runtime</label>
                      </div>
                     </div>
                     <div class="8u 12u(mobilep)">
