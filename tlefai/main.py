@@ -198,7 +198,7 @@ def configureDigitalOcean():
 def configureServerPilot():
     error = None
     preset = None
-    preset_id = 1#session.get("preset_id")
+    preset_id = 1 #session.get("preset_id")
     runtimes = []
     runtimes.append("php5.4")
     runtimes.append("php5.5")

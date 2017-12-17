@@ -24,8 +24,8 @@
                     <div class="8u 12u">
                      <div class="select-wrapper">
                         <select name="runtime" id="runtime">
-                           {% for runtime in runtimes %}
-                           <option value="{{runtime}}">{{runtime}}</option>
+                           {% for runtime_ in runtimes %}
+                           <option value="{{runtime_}}" {% if preset.runtime == runtime_ %} selected {% endif %}>{{runtime_}}</option>
                            {% endfor %}
                         </select>
                          <label for="runtime">Runtime</label>
