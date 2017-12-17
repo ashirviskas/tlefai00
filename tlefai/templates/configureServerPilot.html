@@ -13,13 +13,13 @@
             <form action="{{ url_for('configureServerPilot') }}" method=post>
                 <div class="row uniform 50%">
                     <div class="8u 12u(mobilep)">
-                        <input type="text" name="username" id="username" placeholder="Username">
+                        <input type="text" name="username" id="username" placeholder="Username" value="{{preset.username}}">
                     </div>
                     <div class="8u 12u(mobilep)">
-                        <input type="text" name="password" id="password" placeholder="Password">
+                        <input type="text" name="password" id="password" placeholder="Password" value="{{preset.password}}">
                     </div>
                     <div class="8u 12u(mobilep)">
-                        <input type="text" name="sysuser" id="sysuser" placeholder="Sysuser">
+                        <input type="text" name="sysuser" id="sysuser" placeholder="Sysuser" value="{{preset.sysuser}}">
                     </div>
                     <div class="8u 12u">
                      <div class="select-wrapper">
@@ -31,31 +31,31 @@
                      </div>
                     </div>
                     <div class="8u 12u(mobilep)">
-                        <input type="text" name="domain" id="domain" placeholder="Domain">
+                        <input type="text" name="domain" id="domain" placeholder="Domain" value="{{preset.domain}}">
                     </div>
                     <div class="6u 12u(narrower)">
-                        <input type="checkbox" name="autoupdates" id="autoupdates" checked>
+                        <input type="checkbox" name="autoupdates" id="autoupdates" {% if preset.autoupdates==1 %} checked {% endif %}>
                         <label for="autoupdates">Auto updates</label>
                     </div>
                     <div class="6u 12u(narrower)">
-                        <input type="checkbox" id="firewall" name="firewall">
+                        <input type="checkbox" id="firewall" name="firewall"{% if preset.firewall==1 %} checked {% endif %}>
                         <label for="firewall">Firewall</label>
                     </div>
                     <div class="6u 12u(narrower)">
-                        <input type="checkbox" id="deny_unknown_domains" name="deny_unknown_domains">
+                        <input type="checkbox" id="deny_unknown_domains" name="deny_unknown_domains"{% if preset.deny_unknown_domains==1 %} checked {% endif %}>
                         <label for="deny_unknown_domains">Deny Unknown Domains</label>
                     </div>
                     <div class="8u 12u(mobilep)">
-                        <input type="text" name="admin_user" id="admin_user" placeholder="Admin username">
+                        <input type="text" name="admin_user" id="admin_user" placeholder="Admin username" value="{{preset.admin_user}}">
                     </div>
                     <div class="8u 12u(mobilep)">
-                        <input type="text" name="admin_password" id="admin_password" placeholder="Admin password">
+                        <input type="text" name="admin_password" id="admin_password" placeholder="Admin password" value="{{preset.admin_password}}">
                     </div>
                     <div class="8u 12u(mobilep)">
-                        <input type="text" name="site_title" id="site_title" placeholder="Site title">
+                        <input type="text" name="site_title" id="site_title" placeholder="Site title" value="{{preset.site_title}}">
                     </div>
                     <div class="8u 12u(mobilep)">
-                        <input type="text" name="admin_email" id="admin_email" placeholder="Admin email">
+                        <input type="text" name="admin_email" id="admin_email" placeholder="Admin email" value="{{preset.admin_email}}">
                     </div>
                     <div class="4u 12u(mobilep)">
                         <input type="submit" value="Confirm">
