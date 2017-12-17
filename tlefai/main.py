@@ -221,6 +221,13 @@ def configureServerPilot():
 
 @app.route('/configureCloudFlare/', methods=['POST', 'GET'])
 def configure_CloudFlare():
+    cur = db.cursor()
+    cur.execute("SELECT * FROM CloudFlare_user WHERE user_id=%s ORDER BY ID DESC", str(session['user_id']))
+    data = cur.fetchall()
+    # print(data)
+    api_key = data[0][1]
+    email = data[0][3]
+
     error = None
     if request.method == 'POST':
         if CloudFlare_Valdiklis.patvirtinti(session, db, request.form):
