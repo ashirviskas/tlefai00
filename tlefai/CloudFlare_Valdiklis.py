@@ -27,14 +27,12 @@ def sudeti_raktus_i_lentele(session, db, api_key, email):
     return
 def patvirtinti(session, db, data):
     prideti_i_statistika(session, db, data)
-    #prideti_i_statistika_Firewall(session, db, data)
-    #prideti_i_statistika_preset(session, db, data)
 
 
 
 def prideti_i_statistika(session, db, data):
     cur = db.cursor()
-    priority=data.get("priority")
+    priority=int(data.get("priority"))
     hosts=data.get("hosts")
     zone_id=data.get("zone_id")
     status=data.get("status")
@@ -62,29 +60,29 @@ def prideti_i_statistika(session, db, data):
     value_adress = data.get("value_adress")
     value_range = data.get("value_range")
     value_country_code = data.get("value_country_code")
-    try:
-        cur.execute(
-            """INSERT INTO Cloudflare_preset_Firewall (id, mode, match, order, per_page, configuration_target, direction, value_adress, value_range, value_country_code) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
-            (id, mode, match, order, per_page, configuration_target, direction, value_adress, value_range, value_country_code))
-        db.commit()
-    except:
-        print("Failed adding to database firewall")
-        return False
+    # try:
+    cur.execute("""INSERT INTO Cloudflare_preset_Firewall (id, mode_firewall, match_firewall, order_firewall, per_page, configuration_target, direction, value_adress, value_range, value_country_code) 
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+        (id, mode, match, order, per_page, configuration_target, direction, value_adress, value_range, value_country_code))
+    db.commit()
+    # except:
+    #     print("Failed adding to database firewall")
+    #     return False
     #DNS settings
     type = data.get("type")
     name = data.get("name")
     content = data.get("content")
-    ttl = data.get("ttl")
+    ttl = int(data.get("ttl"))
     proxied = 0
     if (data.get('proxied') is not None):
         proxied = 1
-    try:
-        cur.execute("""INSERT INTO Cloudflare_preset (type, name, content, ttl, proxied) VALUES (%s, %s, %s, %s, %s)""",
-                    (type, name, content, ttl, proxied))
-        db.commit()
-    except:
-        print("Failed adding to database dns")
-        return False
+    # try:
+    cur.execute("""INSERT INTO Cloudflare_preset (type_dns, name_dns, content, ttl, proxied) VALUES (%s, %s, %s, %s, %s)""",
+                (type, name, content, ttl, proxied))
+    db.commit()
+    # except:
+    #     print("Failed adding to database dns")
+    #     return False
 
 
     return True
