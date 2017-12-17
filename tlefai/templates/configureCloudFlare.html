@@ -101,13 +101,13 @@
                     </DIV>
 
                <div class="8u 12u(mobilep)">
-                    <input type="text" name="vlue_adress" id="value_adress" placeholder="Search by IP, or country code">
+                    <input type="text" name="vlue_adress" id="value_adress" placeholder="The IP address to target in requests">
                 </div>
                 <div class="8u 12u(mobilep)">
-                    <input type="text" name="value_range" id="value_range" placeholder="Search by IP, or country code">
+                    <input type="text" name="value_range" id="value_range" placeholder="The IP range to target in requests. Limited to /16 and /24">
                 </div>
                 <div class="8u 12u(mobilep)">
-                    <input type="text" name="value_country_code" id="value_country" placeholder="Search by IP, or country code">
+                    <input type="text" name="value_country_code" id="value_country" placeholder="The 2-digit country code to target in requests.">
                 </div>
                 <div>
                 Whether to match all search requirements or atleast one(any)
@@ -117,21 +117,19 @@
 
                </select>
                 </div>
-               <div class="8u 12u(mobilep)">
-                    <input type="text" name="configuration_value" id="configuration_value" placeholder="Search by IP, or country code">
-                </div>
 
                 <div>
                     Order:
                     Field to order rules by
                 <select name="order">
+                        <option value="scope_type">Scope type</option>
                         <option value="configuration_target">Configuration Target</option>
                         <option value="configuration_value">Configuration value</option>
                         <option value="mode">mode</option>
                </select>
                 </div>
                <div class="8u 12u(mobilep)">
-                    <input type="text" name="per_page" id="per_page" placeholder="Search by IP, or country code">
+                    <input type="text" name="per_page" id="per_page" placeholder="Rules shown per page">
                </div>
                Configuration target
                The rule configuration target
@@ -151,6 +149,7 @@
 
                </select>
                </div>
+                <div>
                     <div class="4u 12u(mobilep)">
                         <input type="submit" value="Confirm">
                     </div>
