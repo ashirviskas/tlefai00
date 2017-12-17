@@ -10,7 +10,7 @@
    <div class="row">
       <div class="12u">
          <section class="box">
-            <form action="{{ url_for('preset_selection') }}" method=post>
+            <form action="{{ url_for('configure_CloudFlare') }}" method=post>
                 <div class="row uniform 50%">
                     <div>
                             Type:
@@ -58,11 +58,11 @@
                     <input type="text" name="hosts" id="hosts" placeholder="The valid hosts for certificate">
                 </div>
                 <div class="8u 12u(mobilep)">
-                    <input type="text" name="zoneID" id="zoneID" placeholder="Zone identifier tag">
+                    <input type="text" name="zone_id" id="zoneID" placeholder="Zone identifier tag">
                 </div>
                     <div>
                             Status:
-                        <select name="type">
+                        <select name="status">
                                 <option value="Active">Active</option>
 
                                 <option value="Expired">Expired</option>
@@ -78,7 +78,7 @@
                     <input type="text" name="certificate" id="certificate" placeholder="The zone's SSL certificate">
                 </div>
                 <div class="8u 12u(mobilep)">
-                    <input type="text" name="ttl" id="privateKey" placeholder="The zone's private Key">
+                    <input type="text" name="private_key" id="private_key" placeholder="The zone's private Key">
                 </div>
 
                 <div>
@@ -101,13 +101,13 @@
                     </DIV>
 
                <div class="8u 12u(mobilep)">
-                    <input type="text" name="vlueAdress" id="The IP address to target in requests" placeholder="Search by IP, or country code">
+                    <input type="text" name="vlue_adress" id="value_adress" placeholder="Search by IP, or country code">
                 </div>
                 <div class="8u 12u(mobilep)">
-                    <input type="text" name="valueRange" id="The IP range to target in requests. Limited to /16 and /24" placeholder="Search by IP, or country code">
+                    <input type="text" name="value_range" id="value_range" placeholder="Search by IP, or country code">
                 </div>
                 <div class="8u 12u(mobilep)">
-                    <input type="text" name="valueCountryCode" id="The 2-digit country code to traget in requests" placeholder="Search by IP, or country code">
+                    <input type="text" name="value_country_code" id="value_country" placeholder="Search by IP, or country code">
                 </div>
                 <div>
                 Whether to match all search requirements or atleast one(any)
@@ -118,26 +118,25 @@
                </select>
                 </div>
                <div class="8u 12u(mobilep)">
-                    <input type="text" name="configurationValue" id="configurationValue" placeholder="Search by IP, or country code">
+                    <input type="text" name="configuration_value" id="configuration_value" placeholder="Search by IP, or country code">
                 </div>
 
                 <div>
                     Order:
                     Field to order rules by
                 <select name="order">
-                        <option value="Configuration_target">Configuration Target</option>
-                        <option value="Configuration_value">Configuration value</option>
+                        <option value="configuration_target">Configuration Target</option>
+                        <option value="configuration_value">Configuration value</option>
                         <option value="mode">mode</option>
                </select>
                 </div>
                <div class="8u 12u(mobilep)">
-                    <input type="text" name="perPage" id="Number of rules per page" placeholder="Search by IP, or country code">
+                    <input type="text" name="per_page" id="per_page" placeholder="Search by IP, or country code">
                </div>
-                <div>
                Configuration target
                The rule configuration target
 
-               <select name="match">
+               <select name="configuration_target">
                         <option value="Ip">IP</option>
                         <option value="IP_range">IP range</option>
                         <option value="Country_code">country code</option>

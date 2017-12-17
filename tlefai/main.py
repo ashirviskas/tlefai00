@@ -159,7 +159,7 @@ def configureServerPilot():
 def configure_CloudFlare():
     error = None
     if request.method == 'POST':
-        if CloudFlare_Valdiklis.patvirtinti(db, request.form):
+        if CloudFlare_Valdiklis.patvirtinti(session, db, request.form):
             print("Registration in success")
             return render_template('index.html', error="Registration success!")
         else:
