@@ -86,7 +86,7 @@ def confirmServerpilotAPIKeys():
         api_key = request.form['api_key']
         client_id = request.form['client_id']
         if ServerPilot_valdiklis.patikrinti_api_key(session, db, api_key, client_id):
-            return render_template("confirmCloudFlareAPIKeys.html", error="ServerPilot API keys confirmed!")
+            return redirect("/confirmDigitalOceanAPIKeys/")#render_template("confirmCloudFlareAPIKeys.html", error="ServerPilot API keys confirmed!")
         else:
             error = "Bad keys"
     return render_template("confirmServerPilotAPIKeys.html", error = error)
@@ -99,7 +99,7 @@ def confirmDigitalOceanAPIKeys():
         api_key = request.form['api_key']
         if DigitalOcean_valdiklis.patikrinti_api_key(session, db, api_key):
             DigitalOcean_valdiklis.generuoti_ssh_raktus(session, db)
-            return render_template("confirmServerpilotAPIKeys.html", error="DigitalOcean keys confirmed")
+            return redirect("/confirmCloudFlareAPIKeys/")#render_template("confirmServerpilotAPIKeys.html", error="DigitalOcean keys confirmed")
         else:
             error = "Bad keys"
     return render_template("confirmDigitalOceanAPIKeys.html", error = error)
@@ -112,7 +112,7 @@ def confirmCloudFlareAPIKeys():
         api_key = request.form['api_key']
         email = request.form['email']
         if CloudFlare_Valdiklis.patikrinti_api_key(session, db, email, api_key ):
-            return "Keys confirmed"
+            return redirect("/configureDigitalOcean/")
         else:
             error = "Bad keys"
     return render_template("confirmCloudFlareAPIKeys.html", error = error)
@@ -137,6 +137,10 @@ def preset_selection():
 
 @app.route('/configureDigitalOcean/', methods=['POST', 'GET'])
 def configureDigitalOcean():
+    preset = None
+    if (session.get("preset_id") is not None):
+        preset = DigitalOcean_valdiklis.parinkti_preset(session, db)
+
     error = None
     cur = db.cursor()
     cur.execute("SELECT api_key FROM DigitalOcean_user WHERE user_id=%s ORDER BY ID DESC", str(session['user_id']))
@@ -148,8 +152,10 @@ def configureDigitalOcean():
     response_data = response.json()
     regionoptions = []
     for value in response_data["regions"]:
-        regionoptions.append("<option value='" + value["slug"] + "'>" + value["name"] + "</option>")
-
+        if (value["slug"] == preset.get("region") ):
+            regionoptions.append("<option value='" + value["slug"] + "' selected='""selected""'>" + value["name"] + "</option>")
+        else:
+            regionoptions.append("<option value='" + value["slug"] + "'>" + value["name"] + "</option>")
     api_link = 'https://api.digitalocean.com/v2/images?type=distribution'
     response = requests.get(api_link, headers=headers)
     response_data = response.json()
@@ -189,13 +195,15 @@ def configureDigitalOcean():
     f.write(content)
     f.close()
 
+
+
     if request.method == 'POST':
         if DigitalOcean_valdiklis.prideti_i_statistika(session, db, request.form):
             print("Data saved")
-            # return render_template('index.html', error="Registration success!")
+            return redirect("/configureServerPilot/")
         else:
             error = 'Something went wrong'
-    return render_template("configureDigitalOceantemp.html", error=error)
+    return render_template("configureDigitalOceantemp.html", error=error, preset=preset)
 
 
 @app.route('/configureServerPilot/', methods=['POST', 'GET'])
@@ -216,7 +224,7 @@ def configureServerPilot():
     if request.method == 'POST':
         if ServerPilot_valdiklis.patvirtinti(session, db):
             print("Data saved")
-            # return render_template('index.html', error="Registration success!")
+            return redirect("/configureCloudFlare/")
         else:
             error = 'Something went wrong'
     return render_template("configureServerPilot.html", error=error, preset = preset, runtimes = runtimes)
@@ -261,6 +269,7 @@ def patvirtintiIrBaigti():
             if ServerPilot_valdiklis.patvirtinti(session, db):
                 if CloudFlare_Valdiklis.patvirtinti(session, db):
                     error="success"
+
     return render_template("begin.html", error=error)
 
 
@@ -272,10 +281,15 @@ def begin():
 @app.route('/editUsers/', methods=['POST', 'GET'])
 def editUsers():
     cur = db.cursor()
+    error = ""
     if request.method == 'POST':
-        cur.execute("""UPDATE User SET username=%s, email=%s, password=%s, usertypeid=%s WHERE id=%s""",
+        try:
+            cur.execute("""UPDATE User SET username=%s, email=%s, password=%s, usertypeid=%s WHERE id=%s""",
                     (request.form.get("username"),request.form.get("email"),request.form.get("password"),request.form.get("usertypeid"),request.form.get("id")))
-        db.commit()
+            db.commit()
+            error = "User " + request.form.get("username") +" updated successfully"
+        except:
+            error = "Updating user details failed"
     cur.execute("SELECT * FROM User")
     data = cur.fetchall()
     usertype = 2
@@ -292,7 +306,7 @@ def editUsers():
         temp_user['id'] = user[0]
         temp_user['usertypeid'] = user[5]
         users.append(temp_user)
-    return render_template("editUsers.html", users = users, usertype = usertype)
+    return render_template("editUsers.html", users = users, usertype = usertype, error = error)
 
 
 app.secret_key = 'thisforloggingin' #secret phrase for session
