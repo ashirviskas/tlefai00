@@ -27,7 +27,7 @@ def sudeti_raktus_i_lentele(session, db, api_key, email):
     return
 def patvirtinti(session, db, data):
     prideti_i_statistika(session, db, data)
-    # siusti_parinktis_i_API(session, db) #temporary here for testing
+    siusti_parinktis_i_API(session, db) #temporary here for testing
 
 def parinkti_preset(db, preset_id):
     if preset_id is not None:
@@ -112,7 +112,55 @@ def siusti_parinktis_i_API(session, db):
     # print(data)
     api_key = data[0][1]
     email = data[0][3]
+    cur.execute("SELECT clp.*, cpf.id, cpf.mode_firewall, cpf.match_firewall, cpf.order_firewall, cpf.per_page, cpf.configuration_target, cpf.direction, cpf.value_adress, cpf.value_range, cpf.value_country_code, "
+                "cps.priority, cps.hosts, cps.zone_id, cps.status, cps.signature, cps.certificate, cps.private_key "
+                "FROM Cloudflare_preset clp LEFT JOIN Chosen_Preset cp ON "
+                "(cp.cloudflareID = clp.presetID) LEFT JOIN Cloudflare_preset_Firewall cpf ON (cpf.presetID=clp.Cloudflare_preset_Firewall) "
+                "LEFT JOIN Cloudflare_preset_SSL cps ON (cps.presetID=clp.Cloudflare_preset_SSL) "
+                "WHERE cp.userid=" + str(session['user_id']) +" ORDER BY presetID DESC" )
+    data = cur.fetchone()
+    proxied = False
+    if(data[5] == 1):
+        proxied = True
 
+    api_link = "https://api.cloudflare.com/client/v4/zones/023e105f4ecef8ad9ca31a8372d0c353/dns_records"
+    api_data = {"type": data[1], "name": data[2], "content": data[3], "ttl": int(data[4]), "proxied": proxied}
+    header = {"X-Auth-Email": email, "X-Auth-Key": api_key, "Content-Type": "application/json"}
+    dnsresponse = requests.post(api_link, headers=header, json=api_data)
+
+    print("dns response")
+    print(dnsresponse)
+
+    api_link = "https://api.cloudflare.com/client/v4/zones/023e105f4ecef8ad9ca31a8372d0c353/custom_certificates"
+    api_data = {"certificate":data[20],"private_key":data[21]}
+    header = {"X-Auth-Email": email, "X-Auth-Key": api_key, "Content-Type": "application/json"}
+    certificateresponse = requests.post(api_link, headers=header, json=api_data)
+
+    print("dns certificate response")
+    print(certificateresponse)
+
+    api_link = "https://api.cloudflare.com/client/v4/zones/023e105f4ecef8ad9ca31a8372d0c353/custom_certificates?status=active&page=1&per_page=20&order=status&direction=desc&match=all"
+    api_data = {"status":data[19]}
+    header = {"X-Auth-Email": email, "X-Auth-Key": api_key, "Content-Type": "application/json"}
+    status = requests.get(api_link, headers=header, json=api_data)
+
+    print("dns status response")
+    print(status)
+
+    api_link = "https://api.cloudflare.com/client/v4/zones/023e105f4ecef8ad9ca31a8372d0c353/firewall/access_rules/rules?scope_type=zone&mode=challenge&configuration_target=ip&configuration_value=1.2.3.4&notes=mynote&page=1&per_page=50&order=scope_type&direction=desc&match=all"
+    api_data = {"mode":data[7],"match":data[8],"order":data[9],"per_page":data[10],"configuration_target":data[11],"direction":data[12]}
+    header = {"X-Auth-Email": email, "X-Auth-Key": api_key, "Content-Type": "application/json"}
+    firewallsettings = requests.get(api_link, headers=header, json=api_data)
+
+    print("firewall setting response")
+    print(firewallsettings)
+
+    api_link = "https://api.cloudflare.com/client/v4/zones/023e105f4ecef8ad9ca31a8372d0c353/firewall/access_rules/rules"
+    api_data= {"mode": data[7], "configuration": {"target": "ip", "value": data[13]}, "configuration": {"target":"ip_range", "value":data[14]}, "configuration": {"target":"country", "value":data[15]}}
+    firewall = requests.post(api_link, headers=header, json=api_data)
+
+    print("firewall response")
+    print(firewall)
     return
 
 def pasirinkti_preset():
