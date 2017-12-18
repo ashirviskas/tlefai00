@@ -83,8 +83,8 @@ def ideti_SSH_raktus(session, db, public_key, private_key):
     return True
 
 
-def patvirtinti(session, db, data):
-    prideti_i_statistika(session, db, data)
+def patvirtinti(session, db):
+    # prideti_i_statistika(session, db, data)
     siusti_parinktis_i_API(session, db) #temporary here for testing
     return True
 

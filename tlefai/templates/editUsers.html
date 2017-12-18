@@ -1,0 +1,44 @@
+{% extends "layout_common.html" %}
+{% block body %}
+{% if error %}
+<p class=error><strong>Error:</strong> {{ error }}</p>{% endif %}
+    <section id="banner">
+        <h2>Configure DigitalOcean</h2>
+    </section>
+<center>
+</center>
+   <div class="row">
+      <div class="12u">
+         <section class="box">
+             {% if usertype == 1 %}
+              {% for user in users %}
+            <form action="{{ url_for('editUsers') }}" method=post>
+                <div class="row uniform 50%">
+                     <div class="8u 12u(mobilep)">
+                    <p>User ID: {{user.id}}</p>
+                    </div>
+                    <div class="6u 12u(mobilep)">
+                        <input type="text" name="username" id="username" placeholder="Username" value="{{user.username}}">
+                    </div>
+                    <div class="6u 12u(mobilep)">
+                        <input type="text" name="email" id="email" placeholder="Password" value="{{user.email}}">
+                    </div>
+                    <div class="6u 12u(mobilep)">
+                        <input type="text" name="password" id="password" placeholder="Sysuser" value="{{user.password}}">
+                    </div>
+                    <div class="6u 12u(mobilep)">
+                        <input type="text" name="usertypeid" id="usertypeid" placeholder="Sysuser" value="{{user.usertypeid}}">
+                    </div>
+                    <input type="hidden" name="id" value="{{user.id}}">
+                    <div class="4u 12u(mobilep)">
+                        <input type="submit" value="Update User">
+                    </div>
+                </div>
+            </form>
+             {% endfor %}
+             {% endif %}
+         </section>
+      </div>
+   </div>
+
+    {% endblock %}

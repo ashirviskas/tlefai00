@@ -8,8 +8,11 @@
     <h2>TLEF'ai</h2>
     <p>We will make your servers for you.</p>
     <ul class="actions">
+        {% if not session.logged_in %}
         <li><a href="/signup/" class="button special">Sign Up</a></li>
-        <li><a href="/" class="button">Learn More</a></li>
+        {% else %}
+        <li><a href="/begin/" class="button special">Start!</a></li>
+        {% endif %}
     </ul>
 </section>
 {% endblock %}

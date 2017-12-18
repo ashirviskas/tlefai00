@@ -1,4 +1,6 @@
 import requests
+import json
+import paramiko
 
 api_link = 'https://api.serverpilot.io/v1/'
 
@@ -52,7 +54,7 @@ def siusti_parinktis_i_API(session, db):
     client_id = data[0][3]
     try:
         cur.execute("SELECT * FROM Chosen_Preset WHERE userID=%s ORDER BY date_of_selection DESC", str(session['user_id']))
-        ServerPilot_preset_id = cur.fetchone()[4] #1 works
+        ServerPilot_preset_id = 1#cur.fetchone()[4] #1 works
         # print(ServerPilot_preset_id)
         cur.execute("SELECT sp.*, spw.* FROM ServerPilot_preset sp "
                     "LEFT JOIN ServerPilot_preset_wordpress spw ON spw.wordpress_presetID = sp.serverpilot_presetID"
@@ -62,6 +64,20 @@ def siusti_parinktis_i_API(session, db):
         description = cur.description
         for i in range(len(description)):
             data[description[i][0]] = data_sp[i]
+        headers = {"Content-Type":"application/json"}
+        data_to_send={}
+        data_to_send["name"] = data["site_title"]
+        data_to_send["id"] = str(data["serverpilot_presetID"])
+        data_to_send["autouptades"] = "false"
+        if (data["autoupdates"] == 1):
+            data_to_send["autouptades"] = "true"
+        print("Gettin response")
+        print(data_to_send)
+        response = requests.post(api_link+"servers",auth=(client_id, api_key),headers = headers, json=data_to_send)
+        response_obj = json.loads(response.text)
+        print(response.text)
+        print(response_obj["data"]["id"])
+        print(response)
     except:
         print("Some errors")
         return None
@@ -70,8 +86,9 @@ def siusti_parinktis_i_API(session, db):
 
 
 
-def patvirtinti(session, db, data):
-    prideti_i_statistika(session, db, data)
+def patvirtinti(session, db):
+
+    return siusti_parinktis_i_API(session, db)
 
 
 def prideti_i_statistika(session, db, data):
