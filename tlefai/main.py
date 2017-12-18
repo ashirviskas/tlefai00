@@ -266,10 +266,15 @@ def begin():
 @app.route('/editUsers/', methods=['POST', 'GET'])
 def editUsers():
     cur = db.cursor()
+    error = ""
     if request.method == 'POST':
-        cur.execute("""UPDATE User SET username=%s, email=%s, password=%s, usertypeid=%s WHERE id=%s""",
+        try:
+            cur.execute("""UPDATE User SET username=%s, email=%s, password=%s, usertypeid=%s WHERE id=%s""",
                     (request.form.get("username"),request.form.get("email"),request.form.get("password"),request.form.get("usertypeid"),request.form.get("id")))
-        db.commit()
+            db.commit()
+            error = "User " + request.form.get("username") +" updated successfully"
+        except:
+            error = "Updating user details failed"
     cur.execute("SELECT * FROM User")
     data = cur.fetchall()
     usertype = 2
@@ -286,7 +291,7 @@ def editUsers():
         temp_user['id'] = user[0]
         temp_user['usertypeid'] = user[5]
         users.append(temp_user)
-    return render_template("editUsers.html", users = users, usertype = usertype)
+    return render_template("editUsers.html", users = users, usertype = usertype, error = error)
 
 
 app.secret_key = 'thisforloggingin' #secret phrase for session
