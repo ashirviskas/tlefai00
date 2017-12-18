@@ -29,7 +29,21 @@ def patvirtinti(session, db, data):
     prideti_i_statistika(session, db, data)
     # siusti_parinktis_i_API(session, db) #temporary here for testing
 
-
+def parinkti_preset(db, preset_id):
+    if preset_id is not None:
+        cur = db.cursor()
+        cur.execute("SELECT sp.*, spw.* FROM Cloudflare_preset sp "
+                    "LEFT JOIN Cloudflare_preset_Firewall spw ON spw.presetID = sp.Cloudflare_preset_Firewall "
+                    "LEFT JOIN Cloudflare_preset_SSL spw2 ON spw2.presetID = sp.Cloudflare_preset_SSL "
+                    " WHERE sp.presetID=%s ", str(preset_id))
+        preset = cur.fetchone()
+        data = {}
+        description = cur.description
+        for i in range(len(description)):
+            data[description[i][0]]=preset[i]
+        # print(data)
+        return data
+    return None
 
 def prideti_i_statistika(session, db, data):
     cur = db.cursor()
@@ -77,13 +91,17 @@ def prideti_i_statistika(session, db, data):
     proxied = 0
     if (data.get('proxied') is not None):
         proxied = 1
-    # try:
-    cur.execute("""INSERT INTO Cloudflare_preset (type_dns, name_dns, content, ttl, proxied) VALUES (%s, %s, %s, %s, %s)""",
-                (type, name, content, ttl, proxied))
-    db.commit()
-    # except:
-    #     print("Failed adding to database dns")
-    #     return False
+    try:
+        cur.execute("SELECT presetID FROM Cloudflare_preset_Firewall ORDER BY presetID DESC")
+        last_inserted_id_firewall = cur.fetchall()[0][0]
+        cur.execute("SELECT presetID FROM Cloudflare_preset_SSL ORDER BY presetID DESC")
+        last_inserted_id_ssl = cur.fetchall()[0][0]
+        cur.execute("""INSERT INTO Cloudflare_preset (type_dns, name_dns, content, ttl, proxied, CloudFlare_preset_SSL, Cloudflare_preset_Firewall ) VALUES (%s, %s, %s, %s, %s, %s, %s)""",
+                    (type, name, content, ttl, proxied, last_inserted_id_ssl, last_inserted_id_firewall))
+        db.commit()
+    except:
+        print("Failed adding to database dns")
+        return False
 
 
     return True
