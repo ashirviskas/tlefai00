@@ -221,15 +221,15 @@ def configureServerPilot():
 
 @app.route('/configureCloudFlare/', methods=['POST', 'GET'])
 def configure_CloudFlare():
-    preset_id =9  # session.get("preset_id")
+    preset_id = 28# session.get("preset_id")
 
     if (preset_id is not None):
         preset = CloudFlare_Valdiklis.parinkti_preset(db, preset_id)
-        print(preset)
+
+        print("%s",preset)
     cur = db.cursor()
     cur.execute("SELECT * FROM CloudFlare_user WHERE user_id=%s ORDER BY ID DESC", str(session['user_id']))
     data = cur.fetchall()
-    # print(data)
     api_key = data[0][1]
     email = data[0][3]
 

@@ -35,7 +35,7 @@ def parinkti_preset(db, preset_id):
         cur.execute("SELECT sp.*, spw.* FROM Cloudflare_preset sp "
                     "LEFT JOIN Cloudflare_preset_Firewall spw ON spw.presetID = sp.Cloudflare_preset_Firewall "
                     "LEFT JOIN Cloudflare_preset_SSL spw2 ON spw2.presetID = sp.Cloudflare_preset_SSL "
-                    " WHERE sp.presetID=%s ", str(preset_id))
+                    " WHERE sp.presetID="+ str(preset_id))
         preset = cur.fetchone()
         data = {}
         description = cur.description
