@@ -31,8 +31,12 @@ def mains():
 
 @app.route('/logout/')
 def logout():
-    session.pop('user_id')
-    session.pop('logged_in')
+    try:
+        session.pop('user_id')
+        session.pop('logged_in')
+        session.pop('usertypeid')
+    except:
+        print("logout error")
     return render_template('index.html')
 
 
@@ -186,7 +190,7 @@ def configureDigitalOcean():
     f.close()
 
     if request.method == 'POST':
-        if DigitalOcean_valdiklis.patvirtinti(session, db, request.form):
+        if DigitalOcean_valdiklis.prideti_i_statistika(session, db, request.form):
             print("Data saved")
             # return render_template('index.html', error="Registration success!")
         else:
@@ -210,7 +214,7 @@ def configureServerPilot():
         preset = ServerPilot_valdiklis.parinkti_preset(db, preset_id)
         print(preset)
     if request.method == 'POST':
-        if ServerPilot_valdiklis.patvirtinti(session, db, request.form):
+        if ServerPilot_valdiklis.patvirtinti(session, db):
             print("Data saved")
             # return render_template('index.html', error="Registration success!")
         else:
@@ -236,16 +240,53 @@ def configure_CloudFlare():
     error = None
     if request.method == 'POST':
         if CloudFlare_Valdiklis.patvirtinti(session, db, request.form):
-
-            return render_template('index.html', error="Registration success!")
+            print("Registration in success")
+            return redirect("/patvirtintiIrBaigti/")
         else:
             error = 'Invalid username/password'
     return render_template("configureCloudFlare.html", error=error)
 
 
+@app.route('/patvirtintiIrBaigti/')
+def patvirtintiIrBaigti():
+    error = "Failed, try again"
+    if request.method == 'POST':
+        if DigitalOcean_valdiklis.patvirtinti(session, db):
+            if ServerPilot_valdiklis.patvirtinti(session, db):
+                if CloudFlare_Valdiklis.patvirtinti(session, db):
+                    error="success"
+    return render_template("begin.html", error=error)
+
+
 @app.route('/begin/')
 def begin():
     return render_template("begin.html")
+
+
+@app.route('/editUsers/', methods=['POST', 'GET'])
+def editUsers():
+    cur = db.cursor()
+    if request.method == 'POST':
+        cur.execute("""UPDATE User SET username=%s, email=%s, password=%s, usertypeid=%s WHERE id=%s""",
+                    (request.form.get("username"),request.form.get("email"),request.form.get("password"),request.form.get("usertypeid"),request.form.get("id")))
+        db.commit()
+    cur.execute("SELECT * FROM User")
+    data = cur.fetchall()
+    usertype = 2
+    print(session.get('user_id'))
+    if session.get('user_id') is not None:
+        cur.execute("""SELECT * from User WHERE id=%s""", str(session['user_id']))
+        usertype = cur.fetchone()[0]
+    users = []
+    for user in data:
+        temp_user = {}
+        temp_user['username'] = user[1]
+        temp_user['email'] = user[2]
+        temp_user['password'] = user[3]
+        temp_user['id'] = user[0]
+        temp_user['usertypeid'] = user[5]
+        users.append(temp_user)
+    return render_template("editUsers.html", users = users, usertype = usertype)
 
 
 app.secret_key = 'thisforloggingin' #secret phrase for session
