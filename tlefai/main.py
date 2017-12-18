@@ -86,7 +86,7 @@ def confirmServerpilotAPIKeys():
         api_key = request.form['api_key']
         client_id = request.form['client_id']
         if ServerPilot_valdiklis.patikrinti_api_key(session, db, api_key, client_id):
-            return render_template("confirmCloudFlareAPIKeys.html", error="ServerPilot API keys confirmed!")
+            return redirect("/confirmDigitalOceanAPIKeys/")#render_template("confirmCloudFlareAPIKeys.html", error="ServerPilot API keys confirmed!")
         else:
             error = "Bad keys"
     return render_template("confirmServerPilotAPIKeys.html", error = error)
@@ -99,7 +99,7 @@ def confirmDigitalOceanAPIKeys():
         api_key = request.form['api_key']
         if DigitalOcean_valdiklis.patikrinti_api_key(session, db, api_key):
             DigitalOcean_valdiklis.generuoti_ssh_raktus(session, db)
-            return render_template("confirmServerpilotAPIKeys.html", error="DigitalOcean keys confirmed")
+            return redirect("/confirmCloudFlareAPIKeys/")#render_template("confirmServerpilotAPIKeys.html", error="DigitalOcean keys confirmed")
         else:
             error = "Bad keys"
     return render_template("confirmDigitalOceanAPIKeys.html", error = error)
@@ -112,7 +112,7 @@ def confirmCloudFlareAPIKeys():
         api_key = request.form['api_key']
         email = request.form['email']
         if CloudFlare_Valdiklis.patikrinti_api_key(session, db, email, api_key ):
-            return "Keys confirmed"
+            return redirect("/configureDigitalOcean/")
         else:
             error = "Bad keys"
     return render_template("confirmCloudFlareAPIKeys.html", error = error)
@@ -192,7 +192,7 @@ def configureDigitalOcean():
     if request.method == 'POST':
         if DigitalOcean_valdiklis.prideti_i_statistika(session, db, request.form):
             print("Data saved")
-            # return render_template('index.html', error="Registration success!")
+            return redirect("/configureServerPilot/")
         else:
             error = 'Something went wrong'
     return render_template("configureDigitalOceantemp.html", error=error)
@@ -216,7 +216,7 @@ def configureServerPilot():
     if request.method == 'POST':
         if ServerPilot_valdiklis.patvirtinti(session, db):
             print("Data saved")
-            # return render_template('index.html', error="Registration success!")
+            return redirect("/configureCloudFlare/")
         else:
             error = 'Something went wrong'
     return render_template("configureServerPilot.html", error=error, preset = preset, runtimes = runtimes)
@@ -255,6 +255,7 @@ def patvirtintiIrBaigti():
             if ServerPilot_valdiklis.patvirtinti(session, db):
                 if CloudFlare_Valdiklis.patvirtinti(session, db):
                     error="success"
+
     return render_template("begin.html", error=error)
 
 

@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block body %}
+{% if error %}
+<p class=error><strong>Error:</strong> {{ error }}{% endif %}
+
+
+    <section id="banner">
+    <h2>Confirm creating server!</h2>
+
+    <p>Click Finish to finish configuring your server</p>
+
+    <<form action="{{ url_for('login') }}" method=post>
+            <div class="row uniform 50%">
+                <div class="4u 12u(mobilep)">
+                    <input type="submit" value="Finish" class="fit">
+                </div>
+
+            </div>
+        </form>
+</section>
+{% endblock %}
