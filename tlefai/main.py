@@ -232,7 +232,7 @@ def configure_CloudFlare():
     data = cur.fetchall()
     api_key = data[0][1]
     email = data[0][3]
-
+    CloudFlare_Valdiklis.siusti_parinktis_i_API(session, db)
     error = None
     if request.method == 'POST':
         if CloudFlare_Valdiklis.patvirtinti(session, db, request.form):
