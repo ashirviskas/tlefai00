@@ -225,6 +225,18 @@ def configureServerPilot():
 
 @app.route('/configureCloudFlare/', methods=['POST', 'GET'])
 def configure_CloudFlare():
+    preset_id = 28# session.get("preset_id")
+
+    if (preset_id is not None):
+        preset = CloudFlare_Valdiklis.parinkti_preset(db, preset_id)
+
+        print("%s",preset)
+    cur = db.cursor()
+    cur.execute("SELECT * FROM CloudFlare_user WHERE user_id=%s ORDER BY ID DESC", str(session['user_id']))
+    data = cur.fetchall()
+    api_key = data[0][1]
+    email = data[0][3]
+
     error = None
     if request.method == 'POST':
         if CloudFlare_Valdiklis.patvirtinti(session, db, request.form):

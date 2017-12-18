@@ -27,14 +27,27 @@ def sudeti_raktus_i_lentele(session, db, api_key, email):
     return
 def patvirtinti(session, db, data):
     prideti_i_statistika(session, db, data)
-    #prideti_i_statistika_Firewall(session, db, data)
-    #prideti_i_statistika_preset(session, db, data)
+    # siusti_parinktis_i_API(session, db) #temporary here for testing
 
-
+def parinkti_preset(db, preset_id):
+    if preset_id is not None:
+        cur = db.cursor()
+        cur.execute("SELECT sp.*, spw.* FROM Cloudflare_preset sp "
+                    "LEFT JOIN Cloudflare_preset_Firewall spw ON spw.presetID = sp.Cloudflare_preset_Firewall "
+                    "LEFT JOIN Cloudflare_preset_SSL spw2 ON spw2.presetID = sp.Cloudflare_preset_SSL "
+                    " WHERE sp.presetID="+ str(preset_id))
+        preset = cur.fetchone()
+        data = {}
+        description = cur.description
+        for i in range(len(description)):
+            data[description[i][0]]=preset[i]
+        # print(data)
+        return data
+    return None
 
 def prideti_i_statistika(session, db, data):
     cur = db.cursor()
-    priority=data.get("priority")
+    priority=int(data.get("priority"))
     hosts=data.get("hosts")
     zone_id=data.get("zone_id")
     status=data.get("status")
@@ -63,24 +76,28 @@ def prideti_i_statistika(session, db, data):
     value_range = data.get("value_range")
     value_country_code = data.get("value_country_code")
     try:
-        cur.execute(
-            """INSERT INTO Cloudflare_preset_Firewall (id, mode, match, order, per_page, configuration_target, direction, value_adress, value_range, value_country_code) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+        cur.execute("""INSERT INTO Cloudflare_preset_Firewall (id, mode_firewall, match_firewall, order_firewall, per_page, configuration_target, direction, value_adress, value_range, value_country_code) 
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
             (id, mode, match, order, per_page, configuration_target, direction, value_adress, value_range, value_country_code))
         db.commit()
     except:
         print("Failed adding to database firewall")
         return False
-    #DNS settings
+    # DNS settings
     type = data.get("type")
     name = data.get("name")
     content = data.get("content")
-    ttl = data.get("ttl")
+    ttl = int(data.get("ttl"))
     proxied = 0
     if (data.get('proxied') is not None):
         proxied = 1
     try:
-        cur.execute("""INSERT INTO Cloudflare_preset (type, name, content, ttl, proxied) VALUES (%s, %s, %s, %s, %s)""",
-                    (type, name, content, ttl, proxied))
+        cur.execute("SELECT presetID FROM Cloudflare_preset_Firewall ORDER BY presetID DESC")
+        last_inserted_id_firewall = cur.fetchall()[0][0]
+        cur.execute("SELECT presetID FROM Cloudflare_preset_SSL ORDER BY presetID DESC")
+        last_inserted_id_ssl = cur.fetchall()[0][0]
+        cur.execute("""INSERT INTO Cloudflare_preset (type_dns, name_dns, content, ttl, proxied, CloudFlare_preset_SSL, Cloudflare_preset_Firewall ) VALUES (%s, %s, %s, %s, %s, %s, %s)""",
+                    (type, name, content, ttl, proxied, last_inserted_id_ssl, last_inserted_id_firewall))
         db.commit()
     except:
         print("Failed adding to database dns")
@@ -88,6 +105,15 @@ def prideti_i_statistika(session, db, data):
 
 
     return True
+def siusti_parinktis_i_API(session, db):
+    cur = db.cursor()
+    cur.execute("SELECT * FROM CloudFlare_user WHERE user_id=%s ORDER BY ID DESC", str(session['user_id']))
+    data = cur.fetchall()
+    # print(data)
+    api_key = data[0][1]
+    email = data[0][3]
+
+    return
 
 def pasirinkti_preset():
     return
