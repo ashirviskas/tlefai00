@@ -133,6 +133,10 @@ def preset_selection():
 
 @app.route('/configureDigitalOcean/', methods=['POST', 'GET'])
 def configureDigitalOcean():
+    preset = None
+    if (session.get("preset_id") is not None):
+        preset = DigitalOcean_valdiklis.parinkti_preset(session, db)
+
     error = None
     cur = db.cursor()
     cur.execute("SELECT api_key FROM DigitalOcean_user WHERE user_id=%s ORDER BY ID DESC", str(session['user_id']))
@@ -144,8 +148,10 @@ def configureDigitalOcean():
     response_data = response.json()
     regionoptions = []
     for value in response_data["regions"]:
-        regionoptions.append("<option value='" + value["slug"] + "'>" + value["name"] + "</option>")
-
+        if (value["slug"] == preset.get("region") ):
+            regionoptions.append("<option value='" + value["slug"] + "' selected='""selected""'>" + value["name"] + "</option>")
+        else:
+            regionoptions.append("<option value='" + value["slug"] + "'>" + value["name"] + "</option>")
     api_link = 'https://api.digitalocean.com/v2/images?type=distribution'
     response = requests.get(api_link, headers=headers)
     response_data = response.json()
@@ -185,13 +191,15 @@ def configureDigitalOcean():
     f.write(content)
     f.close()
 
+
+
     if request.method == 'POST':
         if DigitalOcean_valdiklis.patvirtinti(session, db, request.form):
             print("Data saved")
             # return render_template('index.html', error="Registration success!")
         else:
             error = 'Something went wrong'
-    return render_template("configureDigitalOceantemp.html", error=error)
+    return render_template("configureDigitalOceantemp.html", error=error, preset=preset)
 
 
 @app.route('/configureServerPilot/', methods=['POST', 'GET'])

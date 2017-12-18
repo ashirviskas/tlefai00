@@ -149,8 +149,14 @@ def parinkti_preset(session, db):
     cur = db.cursor()
     cur.execute("SELECT dp.*, dpv.volumesize, dpv.volumename FROM DigitalOcean_preset dp LEFT JOIN Preset p ON (p.digitaloceanID=dp.presetid) "
                 "LEFT JOIN DigitalOcean_preset_volumes dpv ON (dpv.volumeid=dp.volumeid) "
-                "WHERE p.id = ", str(session['preset_id']))
-    return cur.fetchall()
+                "WHERE p.presetID = %s", str(session['preset_id']))
+    preset = cur.fetchone()
+    data = {}
+    description = cur.description
+    for i in range(len(description)):
+        data[description[i][0]]=preset[i]
+    print(data)
+    return data
 
 
 def siusti_parinktis_i_API(session, db):
@@ -180,7 +186,7 @@ def siusti_parinktis_i_API(session, db):
         print(str(response.text))
         return False
 
-    if data[12] != None and data[13] != None:
+    if data[12] is not None and data[13] is not None:
         api_link = 'https://api.digitalocean.com/v2/volumes'
         api_data = {"size_gigabytes":data[12], "name": data[13], "description": "", "region": data[2]}
         response = requests.post(api_link, headers=headers, json=api_data)

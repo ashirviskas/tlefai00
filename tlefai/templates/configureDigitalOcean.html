@@ -12,9 +12,8 @@
          <section class="box">
             <form action="{{ url_for('configureDigitalOcean') }}" method=post>
                 <div class="row uniform 50%">
-                    <input type="hidden" name="monitoring" value="0">
                     <div class="8u 12u(mobilep)">
-                        <input type="text" name="name" id="name" placeholder="Droplet Name">
+                        <input type="text" name="name" id="name" placeholder="Droplet Name" value="{{preset.name}}">
                     </div>
                     <div class="8u 12u(mobilep)">
                         <select name="region">
@@ -35,32 +34,32 @@
                         </select>
                     </div>
                     <div class="6u 12u(narrower)">
-                        <input type="checkbox" id="backups" name="backups" value="1">
+                        <input type="checkbox" id="backups" name="backups" value="1" {% if preset.backups==1 %} checked {% endif %}>
                         <label for="backups">Backups</label>
                     </div>
                     <div class="6u 12u(narrower)">
-                        <input type="checkbox" id="ipv6" name="ipv6" value="1">
+                        <input type="checkbox" id="ipv6" name="ipv6" value="1" {% if preset.ipv6==1 %} checked {% endif %}>
                         <label for="ipv6">IPV6</label>
                     </div>
                     <div class="6u 12u(narrower)">
-                        <input type="checkbox" id="private_networking" name="private_networking" value="1">
+                        <input type="checkbox" id="private_networking" name="private_networking" value="1" {% if preset.private_networking==1 %} checked {% endif %}>
                         <label for="private_networking">Private Networking</label>
                     </div>
                     <div class="6u 12u(narrower)">
-                        <input type="checkbox" id="monitoring" name="monitoring" value="1">
+                        <input type="checkbox" id="monitoring" name="monitoring" value="1" {% if preset.monitoring==1 %} checked {% endif %}>
                         <label for="monitoring">Monitoring</label>
                     </div>
                     <div class="8u 12u(mobilep)">
-                        <input type="text" name="volumesize" id="volumesize" placeholder="Volume size">
+                        <input type="text" name="volumesize" id="volumesize" placeholder="Volume size" value="{{preset.volumesize}}">
                     </div>
                     <div class="8u 12u(mobilep)">
-                        <input type="text" name="volumename" id="volumename" placeholder="Volume name">
+                        <input type="text" name="volumename" id="volumename" placeholder="Volume name" value="{{preset.volumename}}">
                     </div>
                     <div class="8u 12u(mobilep)">
-                        <input type="text" name="tags" id="tags" placeholder="Tags">
+                        <input type="text" name="tags" id="tags" placeholder="Tags" value="{{preset.tags}}">
                     </div>
                      <div class="8u 12u(mobilep)">
-                        <input type="text" name="userdata" id="userdata" placeholder="User data">
+                        <input type="text" name="userdata" id="userdata" placeholder="User data" value="{{preset.userdata}}">
                     </div>
                     <div class="4u 12u(mobilep)">
                         <input type="submit" value="Confirm">
