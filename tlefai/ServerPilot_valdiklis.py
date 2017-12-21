@@ -1,6 +1,6 @@
 import requests
 import json
-import paramiko
+# import paramiko
 
 api_link = 'https://api.serverpilot.io/v1/'
 

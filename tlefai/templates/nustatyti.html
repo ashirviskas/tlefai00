@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% block body %}
+{% if error %}
+<p class=error><strong>Error:</strong> {{ error }}{% endif %}
+
+
+    <section id="banner">
+    <h2></h2>
+
+    <p>Click to configure cloudflare server</p>
+    <ul class="actions">
+        <li><a href="/configureCloudFlare/" class="button special">Konfiguruoti</a></li>
+    </ul>
+</section>
+<form action="{{ url_for('nustatyti_pradines_parinktis') }}" method=get>
+    <div class="8u 12u(mo.bilep)">
+            <input type="text" name="presetID" id="presetID" placeholder="Select preset ID">
+    </div>
+     <div>
+        <div class="4u 12u(mobilep)">
+            <input type="submit" value="presetidConfirm">
+        </div>
+    </div>
+
+</form>
+{% if listas %}
+<p class=listas><strong>Precet ID:</strong> {{ listas }}</p>{% endif %}
+{% endblock %}

@@ -2,6 +2,8 @@
 {% block body %}
 {% if error %}
 <p class=error><strong>Error:</strong> {{ error }}</p>{% endif %}
+{% if succes %}
+<p class=succes><strong>Succesfull:</strong> {{ succes }}</p>{% endif %}
     <section id="banner">
         <h2>Configure CloudFlare</h2>
     </section>
@@ -10,14 +12,14 @@
    <div class="row">
       <div class="12u">
          <section class="box">
+
+
             <form action="{{ url_for('configure_CloudFlare') }}" method=post>
                 <div class="row uniform 50%">
                     <div>
                             Type:
                              <select name="type">
-                                <option value="empty"></option>
                                 <option value="A">A</option>
-
                                 <option value="AAAA">AAAA</option>
                                 <option value="CNAME">CNAME</option>
                                 <option value="TXT">TXT</option>
@@ -149,15 +151,19 @@
 
                </select>
                </div>
+
                 <div>
                     <div class="4u 12u(mobilep)">
                         <input type="submit" value="Confirm">
                     </div>
                 </div>
 
+
+
             </form>
          </section>
       </div>
    </div>
+
 
     {% endblock %}

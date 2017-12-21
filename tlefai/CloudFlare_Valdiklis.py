@@ -26,8 +26,14 @@ def sudeti_raktus_i_lentele(session, db, api_key, email):
         return False
     return
 def patvirtinti(session, db, data):
-    prideti_i_statistika(session, db, data)
-    siusti_parinktis_i_API(session, db) #temporary here for testing
+
+    if(prideti_i_statistika(session,db,data)):
+
+        return True
+    else:
+        return False
+
+    # siusti_parinktis_i_API(session, db) #temporary here for testing
 
 def parinkti_preset(db, preset_id):
     if preset_id is not None:
@@ -41,7 +47,6 @@ def parinkti_preset(db, preset_id):
         description = cur.description
         for i in range(len(description)):
             data[description[i][0]]=preset[i]
-        # print(data)
         return data
     return None
 
@@ -60,6 +65,7 @@ def prideti_i_statistika(session, db, data):
                         VALUES (%s, %s, %s, %s, %s, %s, %s)""",
                     (priority, hosts, zone_id, status, signature, certificate, private_key))
         db.commit()
+
     except:
         print("Failed adding to database ssl")
         return False
@@ -105,6 +111,7 @@ def prideti_i_statistika(session, db, data):
 
 
     return True
+
 def siusti_parinktis_i_API(session, db):
     cur = db.cursor()
     cur.execute("SELECT * FROM CloudFlare_user WHERE user_id=%s ORDER BY ID DESC", str(session['user_id']))
@@ -162,7 +169,3 @@ def siusti_parinktis_i_API(session, db):
     print("firewall response")
     print(firewall)
     return
-
-def pasirinkti_preset():
-    return
-

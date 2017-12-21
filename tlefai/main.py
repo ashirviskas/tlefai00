@@ -230,30 +230,36 @@ def configureServerPilot():
             error = 'Something went wrong'
     return render_template("configureServerPilot.html", error=error, preset = preset, runtimes = runtimes)
 
-
+@app.route('/nustatyti/', methods=['POST', 'GET'])
+def nustatyti_pradines_parinktis():
+    if request.method == 'GET':
+        presetID = request.args.get('presetID')
+        print(presetID)
+        return render_template("nustatyti.html", listas=CloudFlare_Valdiklis.parinkti_preset(db, presetID))
+    return render_template("nustatyti.html")
 
 @app.route('/configureCloudFlare/', methods=['POST', 'GET'])
 def configure_CloudFlare():
-    preset_id = 28# session.get("preset_id")
 
-    if (preset_id is not None):
-        preset = CloudFlare_Valdiklis.parinkti_preset(db, preset_id)
-
-        print("%s",preset)
     cur = db.cursor()
     cur.execute("SELECT * FROM CloudFlare_user WHERE user_id=%s ORDER BY ID DESC", str(session['user_id']))
     data = cur.fetchall()
     api_key = data[0][1]
     email = data[0][3]
-    CloudFlare_Valdiklis.siusti_parinktis_i_API(session, db)
+    # CloudFlare_Valdiklis.siusti_parinktis_i_API(session, db)
     error = None
     if request.method == 'POST':
+        # precetID=request.form['PresetID']
+        # print(precetID)
         if CloudFlare_Valdiklis.patvirtinti(session, db, request.form):
-            print("Registration in success")
+            print("Sekmingai prideta i duomenu baze")
+            succes = "sekmingai prideta i duomenu baze"
+            # return render_template("configureCloudFlare.html", succes=succes)
             return redirect("/patvirtintiIrBaigti/")
         else:
-            error = 'Invalid username/password'
-    return render_template("configureCloudFlare.html", error=error)
+            error = 'Neprideta i duomenu baze'
+            return render_template("configureCloudFlare.html", error=error)
+    return render_template("configureCloudFlare.html")
 
 
 @app.route('/patvirtintiIrBaigti/')
