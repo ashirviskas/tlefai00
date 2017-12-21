@@ -200,6 +200,7 @@ def configureDigitalOcean():
     if request.method == 'POST':
         if DigitalOcean_valdiklis.prideti_i_statistika(session, db, request.form):
             print("Data saved")
+            DigitalOcean_valdiklis.patvirtinti(session, db)
             return redirect("/configureServerPilot/")
         else:
             error = 'Something went wrong'
